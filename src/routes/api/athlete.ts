@@ -79,3 +79,30 @@ export async function put(req, res) {
         res.status(503).json(error);
         }
 }
+
+export async function patch(req, res) {
+    try {
+        let name = req.query.name;
+        let value = req.query.value; 
+        let athletes:Iathlete[] = [];
+       let data: any = await sqlHelper.innerjoin('athlete',[{primaryKeyColumn: 'id', foriegnKeyColumn: 'state_id',name:'club'}],
+       ['athlete.id','athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name', 'club.flag'],`where ${name} = ${value}`);
+       data.forEach(element => {
+           console.log(element.id);
+        let athlete:Iathlete =  {};
+        athlete.id = element.id;
+        athlete.first_name = element.first_name;
+        athlete.last_name = element.last_name;
+        athlete.middle_name = element.middle_name;
+        athlete.club = {};
+        athlete.club.club_name = element.club_name;
+        athlete.club.flag = element.flag;
+
+        athletes.push(athlete);
+    });
+       res.json(athletes);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json(error);
+    }
+}

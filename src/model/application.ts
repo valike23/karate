@@ -11,6 +11,7 @@ export interface Icategory{
 
 export interface Iathlete {
     id?: number;
+    result?: number;
     first_name?: string;
     last_name?: string;
     middle_name?: string;
@@ -26,4 +27,18 @@ export interface IexcelAthlete {
     otherNames?: string;
     category?: string;
     state?: string;
+}
+export interface Ipool{
+    id?: number;
+    pool_name?: string;
+    category_id?: string;
+    category?: Icategory;
+    athletes?: Iathlete[];
+}
+export interface IpoolAthlete{
+    pool?: Ipool;
+    pool_id?: number;
+    athletes?: Iathlete[];
+    athlete_id?: number;
+    result?: number;
 }

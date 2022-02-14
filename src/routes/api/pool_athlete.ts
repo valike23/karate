@@ -1,0 +1,46 @@
+import type { Iathlete, IpoolAthlete } from '../../model/application';
+import {SqlHelper} from '../../model/mysql';
+import { dbconfig } from '../../model/public';
+const sqlHelper = new SqlHelper(dbconfig);
+export async function post (req, res) {
+    try {
+        let pools: IpoolAthlete[] = JSON.parse(req.fields.pool);
+        console.log(pools);
+        let promises = [];
+        pools.forEach((pool)=>{
+          promises.push(sqlHelper.insertQuery(pool,'pool_athlete'));  
+        })
+       Promise.all(promises).then((values)=>{
+           console.log(values);
+        res.json(values);
+       })
+        
+    } catch (error) {
+        console.log(error);
+        res.status(503).json(error);
+    }
+}
+
+export async function get (req, res) {
+    try {
+        let data: any = await sqlHelper.innerjoin('pool_athlete',[{name: 'athlete', foriegnKeyColumn:'athlete_id', primaryKeyColumn: 'id'}],[],
+        `where pool_id =${req.query.id}`);
+        let pool_athlete:IpoolAthlete = {};
+        pool_athlete.athletes = [];
+        data.forEach(element => {
+            
+            let athlete: Iathlete = {};
+            athlete.first_name = element.first_name;
+            athlete.last_name = element.last_name;
+            athlete.middle_name = element.middle_name;
+            athlete.result = element.result;
+
+            pool_athlete.athletes.push(athlete);
+        });
+        res.json(pool_athlete);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json(error);
+    }
+  
+}
