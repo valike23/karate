@@ -66,23 +66,23 @@ id="sidenav-main"
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link text-white " href="./pages/virtual-reality.html">
+      <a class:active={active == 'judges'} class:bg-gradient-primary={active == 'judges'} class="nav-link text-white " href="/judges">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >
-          <i class="material-icons opacity-10">view_in_ar</i>
+          <i class="material-icons opacity-10">gavel</i>
         </div>
-        <span class="nav-link-text ms-1">Virtual Reality</span>
+        <span class="nav-link-text ms-1">Manage Judges</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link text-white " href="./pages/rtl.html">
+      <a class:active={active == 'control'} class:bg-gradient-primary={active == 'control'}  class="nav-link text-white " href="/competition_control">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >
-          <i class="material-icons opacity-10">format_textdirection_r_to_l</i>
+          <i class="material-icons opacity-10">gamepad</i>
         </div>
-        <span class="nav-link-text ms-1">RTL</span>
+        <span class="nav-link-text ms-1">Competition Control</span>
       </a>
     </li>
     <li class="nav-item">

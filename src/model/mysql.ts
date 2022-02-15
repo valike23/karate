@@ -87,7 +87,7 @@ export class SqlHelper {
                 
 
             })
-            query += ` where ${whereClause}`;
+            query += `  ${whereClause}`;
             console.log(query);
             try {
                 const conn = createConnection(this.dbConfig);

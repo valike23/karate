@@ -7,6 +7,7 @@ export interface  Iclub{
 export interface Icategory{
     id?: number;
     category_name?: string;
+    active?: boolean;
 }
 
 export interface Iathlete {
@@ -34,6 +35,7 @@ export interface Ipool{
     category_id?: string;
     category?: Icategory;
     athletes?: Iathlete[];
+    active_time?: Date;
 }
 export interface IpoolAthlete{
     pool?: Ipool;

@@ -3,15 +3,36 @@ import express from 'express';
 import compression from 'compression';
 import * as sapper from '@sapper/server';
 import formidable from 'express-formidable';
-
+import { Socket, Server } from 'socket.io';
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 
-express() // You can also use Express
-	.use(
+import * as http from 'http';
+
+let app = express();
+
+app.use(
 		formidable(),
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),
 		sapper.middleware()
-	)
-	.listen(PORT);
+	);
+
+
+const server = http.createServer(app);
+const io = new Server(server);
+io.of('/display').on('connection',(socket:Socket)=>{
+	console.log(`a user with socketID: ${socket.id} coonnected to the display module`);
+
+	socket.on('show pool',(data)=>{
+		console.log('recieved show pool event');
+		socket.broadcast.emit('active pool', data.pool)
+	})
+});
+
+io.of('/judge').on('connection', (socket: Socket)=>{
+	console.log(`a user with socketID: ${socket.id} coonnected to the judges module`);
+
+})
+
+server.listen(PORT);
