@@ -8,17 +8,22 @@ import axios from "axios";
   };
   let athleticPerformance = 7.0;
   let technicalPerformance = 7.0;
-  let judge = {name:""};
+  let judge = {};
   let modal;
   let screen = '';
   onMount(() => {
     let userString = sessionStorage.getItem("kataUser");
-    if (userString == undefined)
+    if (userString == undefined){
+
       modal = new bootstrap.Modal(document.getElementById("myModal"), {
         keyboard: false,
         backdrop: "static",
       }).show();
+    }
+    else{
+
       judge = JSON.parse(userString );
+    }
   });
   const login = async () => {
     try {
@@ -31,7 +36,7 @@ import axios from "axios";
         });
         if(res) {
             sessionStorage.setItem('kataUser', JSON.stringify(response.data.data));
-            modal.hide();
+            location.reload();
         }
       }
       else{
