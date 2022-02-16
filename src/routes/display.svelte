@@ -5,6 +5,7 @@ import axios from "axios";
   let socket;
   let pool = {};
   let athletes = [];
+  let athlete = {};
   let show = '';
   onMount(() => {
     console.log(window);
@@ -15,6 +16,12 @@ import axios from "axios";
 
     socket.on('update',(data)=>{
         
+    })
+    socket.on('display athlete',(data)=>{
+      console.log('display');
+      show = 'athlete';
+      console.log(data);
+      athlete = data.athlete;
     })
     socket.on('active pool', async (mypool)=>{
       show ="pool";
@@ -85,7 +92,33 @@ import axios from "axios";
     </div>
   </div>
 {:else if  show = 'athlete'}
-   <p></p>
+  <div class="container box card p-3" style="background-color: black">
+    <div class="row">
+      <div class="col-12">
+        <p class="category">male Individual Kata</p>
+      </div>
+      <div class="col-12">
+        <p class="category">{athlete.first_name + athlete.last_name}</p>
+      </div>
+      <div class="col-12">
+        <p class="category">Hong Kong</p>
+      </div>
+    
+    </div>
+
+  </div>
 {:else}
    <p>no display yet</p>
 {/if}
+
+<style>
+  .box{
+    margin-top: 10%;
+   
+  }
+  .category {
+    font-size: 2.0 rem;
+    color: white;
+    font-weight: 600;
+  }
+</style>

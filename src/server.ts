@@ -27,7 +27,12 @@ io.of('/display').on('connection',(socket:Socket)=>{
 	socket.on('show pool',(data)=>{
 		console.log('recieved show pool event');
 		socket.broadcast.emit('active pool', data.pool)
-	})
+	});
+	socket.on('display athlete',(data)=>{
+		console.log('recieved show pool event');
+		socket.broadcast.emit('display athlete', data)
+	});
+
 });
 
 io.of('/judge').on('connection', (socket: Socket)=>{
