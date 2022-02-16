@@ -2,7 +2,7 @@
     export async function preload(page) {
       const res2 = await this.fetch(`api/ip`);
       let ips = await res2.json();
-      ips = ips.en0;
+      ips = ips[Object.keys(ips)[0]];
       console.log(ips);
       return { ips };
     }
