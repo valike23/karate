@@ -32,14 +32,48 @@
   let win;
   export let athletes: Iathlete[] = [{category: {category_name:''}}], categories: Icategory[] = [], clubs: Iclub[] = [];
  
-
+async function deleteItem (this){
+ try {
+  let id =this.id;
+  let athlete = athletes[id];
+  console.log(athlete);
+  let res = await axios.delete('api/athlete?id='+ athlete.id);
+  if(res){
+   let data = await win.Swal.fire({
+      title: 'Success',
+      text: 'the item was deleted successfully',
+      icon: 'success'
+    });
+    if(data){
+      location.reload();
+    }
+  }
+ } catch (error) {
+  win.Swal.fire({
+      title: 'error',
+      text: 'something went wrong when deleting the athlete, please contact support',
+      icon: 'error'
+    });
+    console.log(error);
+ }
+}
 
   onMount(() => {
     win = window;
     const dataTable = new win.simpleDatatables.DataTable("#myTable", {
       searchable: true,
       fixedHeight: false,
+      columns:[ {
+            select: 7,
+            render: function(data, cell, row) {
+                return data + "<span style='color: red' class='material-icons' id='"  + row.dataIndex + "'>delete</span>";
+            }
+        }]
     });
+
+    document.querySelectorAll('span').forEach((span)=>{
+      span.addEventListener('click', deleteItem)
+    })
   });
   const submit = async () => {
     try {
@@ -112,6 +146,8 @@
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">category</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">club/state</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">flag</th>
+
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">actions</th>
                   </tr>
  
             </thead>
@@ -125,6 +161,8 @@
                   <td class="text-sm font-weight-normal">{ath.category.category_name}</td>
                   <td class="text-sm font-weight-normal">{ath.club.club_name}</td>
                   <td class="text-sm font-weight-normal"><img style="width: 50px" src="{ath.club.flag}" alt=""></td>
+                  <td class="text-sm font-weight-normal"></td>
+
                 </tr>
               {/each}
             </tbody>

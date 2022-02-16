@@ -34,6 +34,7 @@ id="sidenav-main"
   <ul class="navbar-nav">
     <li class="nav-item">
       <a
+      rel="external"
        class:active={active == 'home'} class="nav-link text-white  " class:bg-gradient-primary={active == 'home'}
         href="/"
       >
@@ -56,7 +57,7 @@ id="sidenav-main"
       </a>
     </li>
     <li class="nav-item">
-      <a class:active={active == 'category'} class:bg-gradient-primary={active == 'category'} class="nav-link text-white " href="/category">
+      <a rel="external" class:active={active == 'category'} class:bg-gradient-primary={active == 'category'} class="nav-link text-white " href="/category">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >
@@ -66,7 +67,7 @@ id="sidenav-main"
       </a>
     </li>
     <li class="nav-item">
-      <a class:active={active == 'judges'} class:bg-gradient-primary={active == 'judges'} class="nav-link text-white " href="/judges">
+      <a rel="external" class:active={active == 'judges'} class:bg-gradient-primary={active == 'judges'} class="nav-link text-white " href="/judges">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >
@@ -76,7 +77,7 @@ id="sidenav-main"
       </a>
     </li>
     <li class="nav-item">
-      <a class:active={active == 'control'} class:bg-gradient-primary={active == 'control'}  class="nav-link text-white " href="/competition_control">
+      <a rel="external" class:active={active == 'control'} class:bg-gradient-primary={active == 'control'}  class="nav-link text-white " href="/competition_control">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >
@@ -103,7 +104,7 @@ id="sidenav-main"
       </h6>
     </li>
     <li class="nav-item">
-      <a class:active={active == 'links'} class:bg-gradient-primary={active == 'links'} class="nav-link text-white " href="/links">
+      <a rel="external" class:active={active == 'links'} class:bg-gradient-primary={active == 'links'} class="nav-link text-white " href="/links">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >

@@ -17,7 +17,8 @@ export class SqlHelper {
         return new Promise((resolve, reject) => {
             try {
                 const conn = createConnection(this.dbConfig);
-                conn.query(`insert into ${table} set ?`, data, (err, result) => {
+                conn.query(`insert into ${table} set ?`, data,
+                 (err, result) => {
                     if (err) {
                        reject(err);
                     }
@@ -146,6 +147,25 @@ export class SqlHelper {
                 reject(error);
             }
 
+        })
+    }
+    genericDelete(table: string, id: number) {
+        return new Promise((resolve, reject)=>{
+            
+           try {
+            const conn = createConnection(this.dbConfig);
+            conn.query(`DELETE FROM ${table} WHERE id = ${id}`,  (err, result) => {
+                if (err) {
+                   reject(err);
+                }
+                console.log(result);
+                resolve(result)
+
+            })
+           } catch (error) {
+            console.log(error)
+            reject(error);
+           }
         })
     }
 }

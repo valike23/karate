@@ -20,6 +20,7 @@ export async function get (req, res) {
         let athletes:Iathlete[] = [];
         data.forEach(element => {
             let athlete:Iathlete =  {};
+            athlete.id = element.id;
             athlete.first_name = element.first_name;
             athlete.last_name = element.last_name;
             athlete.middle_name = element.middle_name;
@@ -109,6 +110,16 @@ export async function patch(req, res) {
         athletes.push(athlete);
     });
        res.json(athletes);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json(error);
+    }
+}
+
+export async function del(req, res) {
+    try {
+      let data = await  sqlHelper.genericDelete('athlete', req.query.id);
+      res.json(data);
     } catch (error) {
         console.log(error);
         res.status(503).json(error);

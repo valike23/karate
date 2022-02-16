@@ -91,7 +91,7 @@ import axios from "axios";
       </div>
     </div>
   </div>
-{:else if  show = 'athlete'}
+{:else if  show == 'athlete'}
   <div class="container box card p-3" style="background-color: black">
     <div class="row">
       <div class="col-12">

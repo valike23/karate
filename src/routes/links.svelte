@@ -22,7 +22,7 @@ console.log(ips);
 >
 <Nav/>
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-4 card">
     <div class="row mb-5">
         <div class="col-3">
             <span class="material-icons">desktop_windows</span>
