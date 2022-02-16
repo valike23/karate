@@ -105,15 +105,35 @@ async function deleteItem (this){
         title: "error",
         text: "something went wrong please contact support",
       });
+      
     }
   };
   const submitRecord = async () => {
+     try {
       console.log(files);
       if(files.length == 1){
           let form = new FormData();
           form.append('excel', files[0]);
           let response = await axios.put(`api/athlete`, form);
+          if (response) {
+        let done = await win.Swal.fire({
+          icon: "success",
+          title: "ok",
+          text: "athletes created successfully...",
+        });
+        if (done) {
+          location.reload();
+        }
       }
+      }
+     } catch (error) {
+      console.log(error);
+      win.Swal.fire({
+        icon: "error",
+        title: "error",
+        text: "something went wrong please contact support",
+      });
+     }
   }
 </script>
 
