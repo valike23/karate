@@ -16,7 +16,7 @@ export async function post (req, res) {
 export async function get (req, res) {
     try {
         let data: any = await sqlHelper.innerjoin('athlete',[{name: 'category', foriegnKeyColumn:'category_id', primaryKeyColumn: 'id'},
-        {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}]);
+        {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}],['athlete.id', 'athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name','club.flag', 'category.category_name']);
         let athletes:Iathlete[] = [];
         data.forEach(element => {
             let athlete:Iathlete =  {};
@@ -32,6 +32,7 @@ export async function get (req, res) {
 
             athletes.push(athlete);
         });
+        console.log(athletes);
         res.json(athletes);
     } catch (error) {
         console.log(error);
