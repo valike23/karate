@@ -30,6 +30,8 @@ export async function get (req, res) {
         data.forEach(element => {
             
             let athlete: Iathlete = {};
+            athlete.id = element.id;
+            athlete.active_time = element.active_time;
             athlete.first_name = element.first_name;
             athlete.last_name = element.last_name;
             athlete.middle_name = element.middle_name;
@@ -38,6 +40,22 @@ export async function get (req, res) {
             pool_athlete.athletes.push(athlete);
         });
         res.json(pool_athlete);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json(error);
+    }
+  
+}
+
+export async function put (req, res) {
+    try {
+            let pool = req.query.pool;
+            let athlete = req.query.athlete;
+            let kata = req.query.kata;
+            let data = await sqlHelper.updateQuery('pool_athlete',{kata}, `where pool_id=${pool} and athlete_id=${athlete}`);
+        res.json(data);
+        
+       
     } catch (error) {
         console.log(error);
         res.status(503).json(error);

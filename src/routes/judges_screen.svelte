@@ -10,6 +10,7 @@ import axios from "axios";
   let technicalPerformance = 7.0;
   let judge = {name:""};
   let modal;
+  let screen = '';
   onMount(() => {
     let userString = sessionStorage.getItem("kataUser");
     if (userString == undefined)
@@ -52,7 +53,8 @@ import axios from "axios";
 </script>
 
 <div class="container-fluid">
-  <div class="row mb-3">
+{#if screen =="judge"}
+<div class="row mb-3">
     <div class="col-12">
       <h3>upload scores</h3>
       <h6>welcome {judge.name} we would be expecting scores for ___</h6>
@@ -93,6 +95,11 @@ import axios from "axios";
       >
     </div>
   </div>
+{:else}
+     <div class="row">
+         <div class="bold-text">you do not have any current athlete</div>
+     </div>
+{/if}
 </div>
 
 <div id="myModal" class="modal" tabindex="-1">
@@ -124,6 +131,11 @@ import axios from "axios";
 </div>
 
 <style>
+    .bold-text {
+        margin-top: auto;
+        font-size: 1.3 rem;
+        font-weight: 600;
+    }
   .form-control {
     border: 1px solid gray;
   }

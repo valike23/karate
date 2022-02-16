@@ -12,6 +12,7 @@ export interface Icategory{
 
 export interface Iathlete {
     id?: number;
+    active_time?: Date;
     result?: number;
     first_name?: string;
     last_name?: string;
@@ -43,4 +44,11 @@ export interface IpoolAthlete{
     athletes?: Iathlete[];
     athlete_id?: number;
     result?: number;
+    active_time?: Date;
+    end_time?: Date;
+}
+
+export interface Ikata{
+    id?: number;
+    kata_name?: string;
 }
