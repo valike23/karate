@@ -31,7 +31,7 @@
   let closeModal = false;
   let totalTech = 0;
   let totalAth = 0;
-  $: result = (totalAth * 0.3) + (totalTech * 0.7);
+  $: result = totalAth * 0.3 + totalTech * 0.7;
   let socket;
   let nextActivePool =
     pools.find((p) => {
@@ -107,6 +107,24 @@
     });
   });
 
+  const upload =async () =>{
+    //upload score
+    socket.emit('result', result);
+  try {
+    let data = await axios.put(
+        `api/pool_athlete?pool=${activePool.id}&status=result&athlete=${activeAthlete.id}&result=${result}`);
+        if (data) {
+        win.Swal.fire({
+          icon: "success",
+          text: "Athlete has began performing",
+          title: "success",
+        });
+      }
+  } catch (error) {
+    
+  }
+}
+
   const compute = () => {
     let cut = judgesResult.length == 5 ? 1 : 2;
     console.log(cut);
@@ -143,7 +161,7 @@
       totalTech = totalTech + temp[1].technical_performance;
       totalTech = totalTech + temp[2].technical_performance;
       totalTech = totalTech + temp[3].technical_performance;
-      totalTech = totalTech ;
+      totalTech = totalTech;
     }
     if (cut == 2) {
       temp2[0].tech_status = "cancel";
@@ -153,7 +171,7 @@
       totalTech = totalTech + temp[2].technical_performance;
       totalTech = totalTech + temp[3].technical_performance;
       totalTech = totalTech + temp[4].technical_performance;
-      totalTech = totalTech ;
+      totalTech = totalTech;
     }
     console.log(temp2, judgesResult, totalTech);
   };
@@ -331,18 +349,24 @@
                 ><td class="font-weight-bolder">TECH</td
                 >{#each judgesResult as judge}
                   <td>{judge.technical_performance}</td>
-                {/each}<td>{(totalTech).toFixed(2)}</td><td>0.7</td><td>{(totalTech * 0.7).toFixed(2)}</td></tr
+                {/each}<td>{totalTech.toFixed(2)}</td><td>0.7</td><td
+                  >{(totalTech * 0.7).toFixed(2)}</td
+                ></tr
               ><tr
                 ><td class="font-weight-bolder">ATH</td>
                 {#each judgesResult as judge}
                   <td>{judge.athletic_performance}</td>
                 {/each}
-                <td>{(totalAth).toFixed(2)}</td><td>0.3</td><td>{(totalAth * 0.3).toFixed(2)}</td></tr
+                <td>{totalAth.toFixed(2)}</td><td>0.3</td><td
+                  >{(totalAth * 0.3).toFixed(2)}</td
+                ></tr
               ><tr style="height: 75px;">
                 {#each judgesResult as judge}
                   <td> &nbsp;</td>
                 {/each}
-                <td style="background-color: red; color: white;">{(result).toFixed(2)}</td></tr
+                <td style="background-color: red; color: white;"
+                  >{result.toFixed(2)}</td
+                ></tr
               ></tbody
             >
           </table>
@@ -357,6 +381,12 @@
             class="btn btn-danger btn-block btn btn-secondary"
             style="height: 50px;">Compute</button
           >
+          <button
+          type="button"
+          on:click={upload}
+          class="btn btn-danger btn-block btn btn-primary"
+          style="height: 50px;">Upload Result</button
+        >
         </div>
       </div>
       <br />

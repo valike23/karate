@@ -50,6 +50,9 @@ import type { Iathlete } from "../model/application";
 
       }
     });
+    socket.on("result",(result)=>{
+      athlete.result = result;
+    })
   });
 </script>
 
@@ -113,7 +116,7 @@ import type { Iathlete } from "../model/application";
         class="justify-content-center text-center p-4 font-weight-bolder"
         style="background-color: yellow; color: red; height: 230px;"
       >
-        <h1 style="font-size: 130px; font-weight: 800;">0.00</h1>
+        <h1 style="font-size: 130px; font-weight: 800;">{(athlete.result).toFixed(2) || 0.00}</h1>
         <p
           class="float-right text-center align-self-end h2 font-weight-bolder p-4 mr-0"
           style="background-color: transparent; color: yellow; font-size: 50px;"

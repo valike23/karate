@@ -38,6 +38,10 @@ io.of('/display').on('connection',(socket:Socket)=>{
 	socket.on('judge scores',(data)=>{
 
 		socket.broadcast.emit('judge scores', data);
+	});
+	socket.on('result',(data)=>{
+
+		socket.broadcast.emit('result', data);
 	})
 
 });

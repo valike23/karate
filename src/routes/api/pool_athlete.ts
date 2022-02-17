@@ -60,6 +60,11 @@ export async function put (req, res) {
                 let data = await sqlHelper.updateQuery('pool_athlete',{end_time: new Date().toISOString().slice(0, 19).replace('T', ' ')}, `where pool_id=${pool} and athlete_id=${athlete}`);
                 res.json(data);
             }
+            else if(req.query.status == 'result'){
+                let result = req.query.result;
+                let data = await sqlHelper.updateQuery('pool_athlete',result, `where pool_id=${pool} and athlete_id=${athlete}`);
+                res.json(data);
+            }
             else{
                 let pool = req.query.pool;
             let athlete = req.query.athlete;
