@@ -116,7 +116,7 @@ import type { Iathlete } from "../model/application";
         <h1 style="font-size: 130px; font-weight: 800;">0.00</h1>
         <p
           class="float-right text-center align-self-end h2 font-weight-bolder p-4 mr-0"
-          style="background-color: red; color: yellow; font-size: 50px;"
+          style="background-color: transparent; color: yellow; font-size: 50px;"
         >
           1
         </p>
