@@ -52,3 +52,18 @@ export interface Ikata{
     id?: number;
     kata_name?: string;
 }
+
+export interface IjudgePool {
+    pool_id?: number;
+    athlete_id?: number;
+    judge_id?: number;
+    athletic_performance?: number;
+    technical_performance?: number;
+    ath_status?: string;
+    tech_status?: string;
+}
+export interface Ijudge {
+    id?: number;
+    name?: string;
+    password?: string;
+}

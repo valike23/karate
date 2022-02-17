@@ -49,11 +49,24 @@ export async function get (req, res) {
 
 export async function put (req, res) {
     try {
-            let pool = req.query.pool;
+
+        let pool = req.query.pool;
+        let athlete = req.query.athlete;
+            if(req.query.status == 'start'){
+                let data = await sqlHelper.updateQuery('pool_athlete',{active_time: new Date().toISOString().slice(0, 19).replace('T', ' ')}, `where pool_id=${pool} and athlete_id=${athlete}`);
+                res.json(data);
+            }
+            else if(req.query.status == 'end') {
+                let data = await sqlHelper.updateQuery('pool_athlete',{end_time: new Date().toISOString().slice(0, 19).replace('T', ' ')}, `where pool_id=${pool} and athlete_id=${athlete}`);
+                res.json(data);
+            }
+            else{
+                let pool = req.query.pool;
             let athlete = req.query.athlete;
             let kata = req.query.kata;
             let data = await sqlHelper.updateQuery('pool_athlete',{kata}, `where pool_id=${pool} and athlete_id=${athlete}`);
         res.json(data);
+            }
         
        
     } catch (error) {

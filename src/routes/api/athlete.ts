@@ -15,6 +15,29 @@ export async function post (req, res) {
 }
 export async function get (req, res) {
     try {
+       if(req.query.status == 'single'){
+        let data: any = await sqlHelper.innerjoin('athlete',[{name: 'category', foriegnKeyColumn:'category_id', primaryKeyColumn: 'id'},
+        {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}],['athlete.id', 'athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name','club.flag', 'category.category_name'],
+        `where athlete.id =${req.query.id}`);
+        let athletes:Iathlete[] = [];
+        data.forEach(element => {
+            let athlete:Iathlete =  {};
+            athlete.id = element.id;
+            athlete.first_name = element.first_name;
+            athlete.last_name = element.last_name;
+            athlete.middle_name = element.middle_name;
+            athlete.club = {};
+            athlete.club.club_name = element.club_name;
+            athlete.club.flag = element.flag;
+            athlete.category = {};
+            athlete.category.category_name = element.category_name;
+
+            athletes.push(athlete);
+        });
+        console.log(athletes);
+        res.json(athletes[0]);
+       }
+       else{
         let data: any = await sqlHelper.innerjoin('athlete',[{name: 'category', foriegnKeyColumn:'category_id', primaryKeyColumn: 'id'},
         {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}],['athlete.id', 'athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name','club.flag', 'category.category_name']);
         let athletes:Iathlete[] = [];
@@ -34,6 +57,7 @@ export async function get (req, res) {
         });
         console.log(athletes);
         res.json(athletes);
+       }
     } catch (error) {
         console.log(error);
         res.status(503).json(error);

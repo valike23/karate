@@ -1,45 +1,61 @@
-<script>
-import axios from "axios";
+<script lang="ts">
+  import axios from "axios";
 
   import { onMount } from "svelte";
-  let socket;
+import type { Iathlete } from "../model/application";
+  let socket,win;
   let pool = {};
   let athletes = [];
-  let athlete = {};
-  let show = '';
+  let athlete: Iathlete = {};
+  athlete.club ={};
+  athlete.category = {};
+  let show = "";
   onMount(() => {
+    win = window;
     console.log(window);
-    socket = io("/display");
+    socket = win.io("/display");
     socket.on("connect", () => {
       console.log(socket.id);
     });
 
-    socket.on('update',(data)=>{
-        
-    })
-    socket.on('display athlete',(data)=>{
-      console.log('display');
-      show = 'athlete';
+    socket.on("update", (data) => {});
+    socket.on("display athlete", async (data) => {
+      console.log("display");
+      show = "athlete";
       console.log(data);
-      athlete = data.athlete;
-    })
-    socket.on('active pool', async (mypool)=>{
-      show ="pool";
+      athlete = data.activeAthlete;
+      athlete.club = {};
+      athlete.category = {};
+      try {
+        let response = await axios.get(
+          `api/athlete?id=${athlete.id}&status=single`
+        );
+        console.log(data);
+        athlete = response.data;
+        athlete = athlete;
+      } catch (error) {}
+    });
+    socket.on("active pool", async (mypool) => {
+      show = "pool";
       pool = mypool;
       try {
-        athletes = (await (await axios.get(`api/pool_athlete?id=${mypool.id}`)).data).athletes;
+        athletes = (
+          await (
+            await axios.get(`api/pool_athlete?id=${mypool.id}`)
+          ).data
+        ).athletes;
         console.log(athletes);
         athletes = athletes;
       } catch (error) {
-        
+
       }
-    })
+    });
   });
 </script>
 
-{#if show == 'pool'}
-  <div >
-<h3>Current Pool {pool.pool_name}</h3>
+{#if show == "pool"}
+  <div>
+    <h3>Current Pool {pool.pool_name}</h3>
   </div>
   <div class="row p-4">
     <div class="col-12 ">
@@ -67,21 +83,13 @@ import axios from "axios";
               {#each athletes as a, i}
                 <tr>
                   <td class="align-middle text-center text-black text-sm">
-                    <p
-                      >{i + 1}</p
-                    >
+                    <p>{i + 1}</p>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <p
-                      >{a.first_name +
-                        " " +
-                        a.last_name}</p
-                    >
+                    <p>{a.first_name + " " + a.last_name}</p>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <p 
-                      >{a.result || 0}</p
-                    >
+                    <p>{a.result || 0}</p>
                   </td>
                 </tr>
               {/each}
@@ -91,33 +99,137 @@ import axios from "axios";
       </div>
     </div>
   </div>
-{:else if  show == 'athlete'}
-  <div class="container box card p-3" style="background-color: black">
-    <div class="row">
-      <div class="col-12">
-        <p class="category">male Individual Kata</p>
-      </div>
-      <div class="col-12">
-        <p class="category">{athlete.first_name + athlete.last_name}</p>
-      </div>
-      <div class="col-12">
-        <p class="category">Hong Kong</p>
-      </div>
-    
+{:else if show == "athlete"}
+<div class="container" style="background-color: black;">
+  <div class="text-center justify-content-center row">
+    <div class="col-8">
+      <br />
+      <h1 class="text-uppercase" style="color: red; font-weight: 800;" />
     </div>
-
   </div>
+  <div class="p-3 row">
+    <div class="col-5">
+      <div
+        class="justify-content-center text-center p-4 font-weight-bolder"
+        style="background-color: yellow; color: red; height: 230px;"
+      >
+        <h1 style="font-size: 130px; font-weight: 800;">0.00</h1>
+        <p
+          class="float-right text-center align-self-end h2 font-weight-bolder p-4 mr-0"
+          style="background-color: red; color: yellow; font-size: 50px;"
+        >
+          1
+        </p>
+      </div>
+    </div>
+    <div
+      class="justify-content-end text-center pt-4 text-white font-weight-bolder col-5"
+    >
+      <span class="font-size-18">0.7 TECHNICAL</span>&nbsp;&nbsp;<span
+        class="font-size-18">0.3 ATHLETIC</span
+      >
+    </div>
+    <div class="col-2" />
+  </div>
+  <br />
+  <div class="text-center justify-content-center row">
+    <div class="text-center col-8">
+      <h1 class="text-uppercase" style="color: red; font-size: 40px;" >{athlete.category.category_name}</h1>
+    </div>
+  </div>
+  <br />
+  <div class="p-4 row">
+    <div class="col-4">
+      <div class="pl-4" style="border-left: 1px solid red;">
+        <h1 style="color: white;" >{athlete.first_name + ' ' + athlete.last_name}</h1>
+      </div>
+    </div>
+    <div class="col-4">
+      <img
+        class="img-fluid"
+        src="{athlete.club.flag}"
+        alt="state-flag"
+        width="500"
+      />
+    </div>
+    <div class="col-4">
+      <div class="pr-4 text-right" style="border-right: 1px solid red;">
+        <h1 style="color: white;" >Kata to be performed</h1>
+      </div>
+    </div>
+  </div>
+  <br />
+</div>
+  
 {:else}
-   <p>no display yet</p>
+  <div class="container" style="background-color: black;">
+    <div class="text-center justify-content-center row">
+      <div class="col-8">
+        <br />
+        <h1 class="text-uppercase" style="color: red; font-weight: 800;" />
+      </div>
+    </div>
+    <div class="p-3 row">
+      <div class="col-5">
+        <div
+          class="justify-content-center text-center p-4 font-weight-bolder"
+          style="background-color: yellow; color: red; height: 230px;"
+        >
+          <h1 style="font-size: 130px; font-weight: 800;">0.00</h1>
+          <p
+            class="float-right text-center align-self-end h1 font-weight-bolder p-4 mr-0"
+            style="background-color: red; color: yellow; font-size: 50px;"
+          >
+            1
+          </p>
+        </div>
+      </div>
+      <div
+        class="justify-content-end text-center pt-4 text-white font-weight-bolder col-5"
+      >
+        <span class="font-size-18">0.7 TECHNICAL</span>&nbsp;&nbsp;<span
+          class="font-size-18">0.3 ATHLETIC</span
+        >
+      </div>
+      <div class="col-2" />
+    </div>
+    <br />
+    <div class="text-center justify-content-center row">
+      <div class="text-center col-8">
+        <h1 class="text-uppercase" style="color: red; font-size: 40px;" />
+      </div>
+    </div>
+    <br />
+    <div class="p-4 row">
+      <div class="col-4">
+        <div class="pl-4" style="border-left: 1px solid red;">
+          <h1 style="color: white;" />
+        </div>
+      </div>
+      <div class="col-4">
+        <img
+          class="img-fluid"
+          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAw8AAAGHCAMAAADBfp54AAAADFBMVEUAh1H///8AilT3+/n8TJ08AAAF3ElEQVR4nO3TsQ2AQADEsA/svzMF0q0Ahb1ClHM41x339XUGfsIP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ35g/JAfGD/kB8YP+YHxQ354Pd2pmuuEU3veAAAAAElFTkSuQmCC"
+          alt="state-flag"
+          width="500"
+        />
+      </div>
+      <div class="col-4">
+        <div class="pr-4 text-right" style="border-right: 1px solid red;">
+          <h1 style="color: white;" />
+        </div>
+      </div>
+    </div>
+    <br />
+  </div>
 {/if}
 
 <style>
-  .box{
+  .box {
     margin-top: 10%;
-   
   }
   .category {
-    font-size: 2.0 rem;
+    font-size: 2 rem;
     color: white;
     font-weight: 600;
   }

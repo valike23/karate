@@ -11,30 +11,37 @@
 
 <script lang="ts">
   import axios from "axios";
-  import { response } from "express";
 
+  var _ = require("lodash");
   import { onMount } from "svelte";
 
   import Nav from "../components/Nav.svelte";
   import Sidebar from "../components/Sidebar.svelte";
-  import type { Iathlete, Ikata, Ipool } from "../model/application";
+  import type {
+    Iathlete,
+    IjudgePool,
+    Ikata,
+    Ipool,
+  } from "../model/application";
   let active = "control";
   export let pools: Ipool[], katas: Ikata[];
   let poolAthletes: Iathlete[] = [];
   let kata = "";
   let win, modal;
+  let closeModal = false;
+  let totalTech = 0;
+  let totalAth = 0;
+  $: result = (totalAth * 0.3) + (totalTech * 0.7);
   let socket;
-  let aboutToStart = false;
   let nextActivePool =
     pools.find((p) => {
       return p.active_time;
     }) || pools[0];
   let activePool: Ipool = {};
+  let isActve = false;
+  let judgesResult: IjudgePool[] = [];
   let activeAthlete: Iathlete = {};
   let nextAthlete: Iathlete = {};
-  const startKata = () =>{
-    let res = confirm(`do you want to start ${activeAthlete.first_name + ' ' + activeAthlete.last_name}`)
-  }
   const assignKata = async () => {
     try {
       let data = await axios.put(
@@ -47,9 +54,9 @@
           title: "set athlete",
           text: "the current athlete kata have been set, you can start the competition anytime you like",
         });
-        if (response) {
-          modal.hide();
-          aboutToStart = true;
+        if (res) {
+          closeModal = true;
+          isActve = true;
         }
       }
     } catch (error) {
@@ -85,21 +92,124 @@
       }
     }
   };
-
+  let showJudges = false;
   onMount(() => {
     win = window;
     socket = win.io("/display");
     socket.on("connect", () => {
       console.log(socket.id);
     });
+    socket.on("judge scores", (data) => {
+      console.log(data);
+      judgesResult.push(data);
+      judgesResult = judgesResult;
+      showJudges = true;
+    });
   });
+
+  const compute = () => {
+    let cut = judgesResult.length == 5 ? 1 : 2;
+    console.log(cut);
+
+    let temp = judgesResult.sort((a, b) => {
+      return a.athletic_performance - b.athletic_performance;
+    });
+    console.log(temp, judgesResult);
+    if (cut == 1) {
+      temp[0].ath_status = "cancel";
+      temp[4].ath_status = "cancel";
+      totalAth = totalAth + temp[1].athletic_performance;
+      totalAth = totalAth + temp[2].athletic_performance;
+      totalAth = totalAth + temp[3].athletic_performance;
+      totalAth = totalAth;
+    }
+    if (cut == 2) {
+      temp[0].ath_status = "cancel";
+      temp[1].ath_status = "cancel";
+      totalAth = totalAth + temp[2].athletic_performance;
+      totalAth = totalAth + temp[3].athletic_performance;
+      totalAth = totalAth + temp[4].athletic_performance;
+      totalAth = totalAth;
+    }
+    console.log(temp, judgesResult, totalAth);
+
+    let temp2 = judgesResult.sort((a, b) => {
+      return a.technical_performance - b.technical_performance;
+    });
+    console.log(temp2, judgesResult);
+    if (cut == 1) {
+      temp2[0].tech_status = "cancel";
+      temp2[4].tech_status = "cancel";
+      totalTech = totalTech + temp[1].technical_performance;
+      totalTech = totalTech + temp[2].technical_performance;
+      totalTech = totalTech + temp[3].technical_performance;
+      totalTech = totalTech ;
+    }
+    if (cut == 2) {
+      temp2[0].tech_status = "cancel";
+      temp2[1].tech_status = "cancel";
+      temp2[5].tech_status = "cancel";
+      temp2[6].tech_status = "cancel";
+      totalTech = totalTech + temp[2].technical_performance;
+      totalTech = totalTech + temp[3].technical_performance;
+      totalTech = totalTech + temp[4].technical_performance;
+      totalTech = totalTech ;
+    }
+    console.log(temp2, judgesResult, totalTech);
+  };
+
   const openKataModal = () => {
     modal = new win.bootstrap.Modal(document.getElementById("kata"), {
       keyboard: false,
       backdrop: "static",
     }).show();
+    closeModal = true;
   };
-  const startAthlete = () => {};
+  const startKata = async () => {
+    try {
+      let data = await axios.put(
+        `api/pool_athlete?pool=${activePool.id}&status=start&athlete=${activeAthlete.id}`
+      );
+      if (data) {
+        win.Swal.fire({
+          icon: "success",
+          text: "Athlete has began performing",
+          title: "success",
+        });
+      }
+    } catch (error) {
+      win.Swal.fire({
+        icon: "error",
+        text: "Something went wrong. Please you do well to contact support",
+        title: "Error",
+      });
+    }
+  };
+  const stopKata = async () => {
+    try {
+      let data = await axios.put(
+        `api/pool_athlete?pool=${activePool.id}&status=end&athlete=${activeAthlete.id}`
+      );
+      if (data) {
+        win.Swal.fire({
+          icon: "success",
+          text: "Athlete has began performing",
+          title: "success",
+        }).then(() => {
+          socket.emit("start judge", {
+            athlete: activeAthlete,
+            pool: activePool,
+          });
+        });
+      }
+    } catch (error) {
+      win.Swal.fire({
+        icon: "error",
+        text: "Something went wrong. Please you do well to contact support",
+        title: "Error",
+      });
+    }
+  };
 </script>
 
 <Sidebar {active} />
@@ -173,16 +283,85 @@
       </div>
     </div>
 
-    <div class="row mt-5">
-      <div class="col-12 card mt-1 mb-1 ml-2 mr-2">
-        <div class="row">
-          <div class="col-1"><img src="{activeAthlete.club.flag}" alt=""></div>
-          <div class="col-5">{activeAthlete.first_name + " " + activeAthlete.last_name}</div>
-          <div class="col-3">{activeAthlete.club.club_name}</div>
-          <div class="col-2"><span on:click="{startKata}" style="color:green" class="material-icons">play_arrow</span></div>
+    {#if closeModal}
+      <div class="row card mt-5">
+        <div class="col-2"><img src="" alt="" /></div>
+        <div class="col-4">
+          {activeAthlete.first_name + " " + activeAthlete.last_name}
+        </div>
+        <div class="col-4">
+          <button on:click={startKata} class="btn btn-success">start</button>
+          <button on:click={stopKata} class="btn btn-primary">Stop</button>
         </div>
       </div>
-    </div>
+    {/if}
+    {#if showJudges}
+      <div class="ml-2 row mt-5">
+        <div
+          class="py-5 col-2"
+          style="height: 150px; background-color: red; justify-content: center; align-items: center; text-align: center;"
+        >
+          <span class="font-weight-bolder text-white" style="font-size: 40px;"
+            >{result}</span
+          >
+        </div>
+        <div class="col-4">
+          <h3 class="text-uppercase font-weight-bolder" />
+          <br />
+          <h4 />
+          <br />
+          <h4 />
+        </div>
+        <div class="text-right col-6"><h4 style="color: red;" /></div>
+      </div>
+      <div class="m-0 row">
+        <div class="w-100 col-12">
+          <table
+            class="table table-bordered table-responsive font-size-17"
+            width="100%"
+          >
+            <thead class="thead-dark"
+              ><tr
+                ><th />{#each judgesResult as judge, i}
+                  <th>{"judge" + (i + 1)}</th>
+                {/each}<th>TOTAL</th><th>FACTOR</th><th>RESULT</th></tr
+              ></thead
+            ><tbody
+              ><tr
+                ><td class="font-weight-bolder">TECH</td
+                >{#each judgesResult as judge}
+                  <td>{judge.technical_performance}</td>
+                {/each}<td>{(totalTech).toFixed(2)}</td><td>0.7</td><td>{(totalTech * 0.7).toFixed(2)}</td></tr
+              ><tr
+                ><td class="font-weight-bolder">ATH</td>
+                {#each judgesResult as judge}
+                  <td>{judge.athletic_performance}</td>
+                {/each}
+                <td>{(totalAth).toFixed(2)}</td><td>0.3</td><td>{(totalAth * 0.3).toFixed(2)}</td></tr
+              ><tr style="height: 75px;">
+                {#each judgesResult as judge}
+                  <td> &nbsp;</td>
+                {/each}
+                <td style="background-color: red; color: white;">{(result).toFixed(2)}</td></tr
+              ></tbody
+            >
+          </table>
+        </div>
+      </div>
+      <br />
+      <div class="text-center justify-content-center row">
+        <div class="col-4">
+          <button
+            type="button"
+            on:click={compute}
+            class="btn btn-danger btn-block btn btn-secondary"
+            style="height: 50px;">Compute</button
+          >
+        </div>
+      </div>
+      <br />
+      <br />
+    {/if}
   </div>
 </main>
 <div id="kata" class="modal" tabindex="-1">
@@ -216,6 +395,13 @@
         </div>
       </div>
       <div class="modal-footer">
+        {#if closeModal}
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">Close</button
+          >
+        {/if}
         <input type="submit" class="btn btn-primary" />
       </div>
     </form>

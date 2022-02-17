@@ -32,6 +32,13 @@ io.of('/display').on('connection',(socket:Socket)=>{
 		console.log('recieved show pool event');
 		socket.broadcast.emit('display athlete', data)
 	});
+	socket.on('start judge',(data)=>{
+		socket.broadcast.emit('start judge', data);
+	})
+	socket.on('judge scores',(data)=>{
+
+		socket.broadcast.emit('judge scores', data);
+	})
 
 });
 
