@@ -93,6 +93,7 @@ export async function put(req, res) {
 
                 athletes.push(athlete);
               });
+              console.log(athletes);
               let promises = [];
               athletes.forEach((e, i)=>{
                let promise = sqlHelper.insertQuery(e,'athlete');

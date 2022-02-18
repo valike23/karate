@@ -7,7 +7,9 @@ import type { Iathlete } from "../model/application";
   let pool = {};
   let athletes = [];
   let athlete: Iathlete = {};
+  athlete.result = 0;
   athlete.club ={};
+  let kata = '';
   athlete.category = {};
   let show = "";
   onMount(() => {
@@ -23,16 +25,19 @@ import type { Iathlete } from "../model/application";
       console.log("display");
       show = "athlete";
       console.log(data);
+      kata = data.kata;
       athlete = data.activeAthlete;
+      athlete.result = 0;
       athlete.club = {};
       athlete.category = {};
       try {
         let response = await axios.get(
-          `api/athlete?id=${athlete.id}&status=single`
+          `api/athlete?id=${data.activeAthlete.id}&status=single`
         );
-        console.log(data);
+        console.log(response.data);
         athlete = response.data;
         athlete = athlete;
+        athlete.result = 0;
       } catch (error) {}
     });
     socket.on("active pool", async (mypool) => {
@@ -157,7 +162,7 @@ import type { Iathlete } from "../model/application";
     </div>
     <div class="col-4">
       <div class="pr-4 text-right" style="border-right: 1px solid red;">
-        <h1 style="color: white;" >Kata to be performed</h1>
+        <h1 style="color: white;" >{kata}</h1>
       </div>
     </div>
   </div>
