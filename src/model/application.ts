@@ -12,7 +12,7 @@ export interface Icategory{
 
 export interface Iathlete {
     id?: number;
-    active_time?: Date;
+    active_time?: Date | string;
     result?: number;
     first_name?: string;
     last_name?: string;

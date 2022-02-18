@@ -14,7 +14,7 @@
 
   var _ = require("lodash");
   import { onMount } from "svelte";
-
+let pause = false;
   import Nav from "../components/Nav.svelte";
   import Sidebar from "../components/Sidebar.svelte";
   import type {
@@ -124,6 +124,26 @@
     
   }
 }
+const nextAthleteBtn =()=>{
+  if(nextAthlete.id){
+    activeAthlete = nextAthlete;
+    nextAthlete = {};
+    for (let index = 0; index < poolAthletes.length; index++) {
+      const element = poolAthletes[index];
+      if(element.active_time){
+        nextAthlete = element;
+        break;
+      }
+    }
+  }
+  else{
+    win.Swal.fire({
+          icon: "info",
+          text: "You have come to the end of the pool you can now end the pool if you will.",
+          title: "Notice",
+        })
+  }
+}
 
   const compute = () => {
     let cut = judgesResult.length == 5 ? 1 : 2;
@@ -185,6 +205,7 @@
   };
   const startKata = async () => {
     try {
+      
       let data = await axios.put(
         `api/pool_athlete?pool=${activePool.id}&status=start&athlete=${activeAthlete.id}`
       );
@@ -193,6 +214,12 @@
           icon: "success",
           text: "Athlete has began performing",
           title: "success",
+        }).then(()=>{
+          pause = true;
+         let index = poolAthletes.findIndex((e)=>{
+            return e.id == activeAthlete.id
+          });
+          poolAthletes[index].active_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
         });
       }
     } catch (error) {
@@ -289,7 +316,7 @@
         <div on:click={start} class="button btn bg-primary">start pool</div>
       </div>
       <div class="col-12 col-sm-3">
-        <div class="button btn bg-secondary ">Next Athlete</div>
+        <div on:click="{nextAthleteBtn}" class="button btn bg-secondary ">Next Athlete</div>
       </div>
       <div class="col-12 col-sm-3">
         <div class="button btn bg-secondary " on:click={openKataModal}>
