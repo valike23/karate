@@ -24,7 +24,7 @@ export async function post (req, res) {
 export async function get (req, res) {
     try {
         let data: any = await sqlHelper.innerjoin('pool_athlete',[{name: 'athlete', foriegnKeyColumn:'athlete_id', primaryKeyColumn: 'id'}],[],
-        `where pool_id =${req.query.id}`);
+        `where pool_id =${req.query.id}  ORDER BY pool_athlete.result DESC`);
         let pool_athlete:IpoolAthlete = {};
         pool_athlete.athletes = [];
         data.forEach(element => {
@@ -62,7 +62,7 @@ export async function put (req, res) {
             }
             else if(req.query.status == 'result'){
                 let result = req.query.result;
-                let data = await sqlHelper.updateQuery('pool_athlete',result, `where pool_id=${pool} and athlete_id=${athlete}`);
+                let data = await sqlHelper.updateQuery('pool_athlete',{result: result}, `where pool_id=${pool} and athlete_id=${athlete}`);
                 res.json(data);
             }
             else{
