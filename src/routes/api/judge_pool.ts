@@ -21,3 +21,14 @@ export async function get (req, res) {
     }
   
 }
+
+export async function put (req, res){
+    try {
+      let data = await  sqlHelper.innerjoin('judge_pool_athlete',[{name:'athlete', foriegnKeyColumn: 'athlete_id', primaryKeyColumn:'id'}]);
+        console.log(data);
+        res.json(data);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json(error);
+    }
+}

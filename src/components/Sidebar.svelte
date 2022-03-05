@@ -47,6 +47,16 @@ id="sidenav-main"
       </a>
     </li>
     <li class="nav-item">
+      <a class:active={active == 'competition'} class:bg-gradient-primary={active == 'competition'} class="nav-link text-white " href="/competition">
+        <div
+          class="text-white text-center me-2 d-flex align-items-center justify-content-center"
+        >
+          <i class="material-icons opacity-10">add</i>
+        </div>
+        <span class="nav-link-text ms-1">Manage Competition</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a class:active={active == 'athlete'} class:bg-gradient-primary={active == 'athlete'} class="nav-link text-white " href="/manage_athlete">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"

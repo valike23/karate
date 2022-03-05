@@ -61,9 +61,33 @@ export interface IjudgePool {
     technical_performance?: number;
     ath_status?: string;
     tech_status?: string;
+    first_name?: string;
+    last_name?: string;
 }
 export interface Ijudge {
     id?: number;
     name?: string;
     password?: string;
+}
+
+export interface Icompetition {
+    id?: number;
+    competition_name?: string;
+    start_date?: Date| string;
+    status?: string;
+}
+export interface IjudgeResult {
+    athletic_performance?: number;
+    technical_performance?: number;
+    judge_id?: number;
+    ap_color?:string;
+    tc_color?: string;
+}
+export interface IjudgeAthleteResult {
+    last_name?: string;
+    first_name?: string;
+    club?: string;
+    kata?: string;
+    athlete_id?: number;
+    judgeResult?: IjudgeResult[]
 }

@@ -2,6 +2,7 @@
   export async function preload(page) {
     console.log(page.query);
     let query = page.query;
+    //retrieve all records needed to work this page
     const res2 = await this.fetch(
       `api/athlete?name=category_id&value=${query.id}`,
       { method: "PATCH" }
@@ -27,25 +28,28 @@
   let win: any = {};
   let active = "category";
   let group: Ipool = {};
+  console.log(pools);
   let groups: Ipool[] = [];
+  const deletePool =(pool)=>{
+    console.log(pool);
+    
+  }
   if (pools.length == 0) {
+    //if there is no pool for this category set the page to generatePool page
+    //otherwise maintain status code of showing the pool full status with current result
     generatePools = true;
-    // if (athletes.length <= 3) {
-    // } else if (athletes.length == 4) {
-    // } else if (athletes.length >= 5 && athletes.length <= 10) {
-    // } else if (athletes.length >= 11 && athletes.length <= 24) {
-    // } else if (athletes.length >= 25 && athletes.length <= 48) {
-    // } else if (athletes.length >= 49 && athletes.length <= 96) {
-    // } else if (athletes.length >= 97 && athletes.length <= 96) {
-    // } else if (athletes.length >= 193) {
-    // }
+  
   } 
+  else{
+    //if there are items then generate group from the pools
+  
+  }
 
   onMount(()=>{
     console.log(pools);
     console.log(groups);
     pools.forEach( (pool,i) => {
-      let group: Ipool = {};
+      let group: Ipool = pool;
       group.athletes = [];
       axios.get(`api/pool_athlete?id=${pool.id}`).then((data)=>{
         console.log('the kid called the boss thinking he is boss:,',data);
@@ -54,11 +58,25 @@
       groups.push(group);
       groups = groups;
       console.log('the groups is going down here:',groups);
+      groups.forEach((group,i)=>{
+          group.athletes.forEach((athlete,j)=>{
+          let index =  athletes.findIndex((a)=>{
+              return a.id == athlete.id
+            });
+            if(index != -1){
+              console.log(athletes[index], index);
+              groups[i].athletes[j].club = athletes[index].club;
+              athletes.splice(index,1);
+            }
+          })
+      });
+      athletes = athletes;
       });
      
     });
     
   })
+  let isUpdate = false;
 
   const submit = async () => {
     try {
@@ -125,6 +143,10 @@
         console.log(poolAthletes);
         let form = new FormData();
         form.append("pool", JSON.stringify(poolAthletes));
+        if(isUpdate){
+          let data2 = await axios.patch(`api/pool_athlete`, form);
+          if(data2){
+            console.log(data2.data);
         let data = await axios.post(`api/pool_athlete`, form);
         if (data.data) {
           let response = await win.Swal.fire({
@@ -133,6 +155,20 @@
             title: "success",
           });
           if (response) location.reload();
+        }
+          }
+        }
+        else{
+
+        let data = await axios.post(`api/pool_athlete`, form);
+        if (data.data) {
+          let response = await win.Swal.fire({
+            icon: "success",
+            text: "pools populated successfully...",
+            title: "success",
+          });
+          if (response) location.reload();
+        }
         }
       } catch (error) {
         console.log(error);
@@ -145,6 +181,10 @@
       }
     }
   };
+  const switchView =()=>{
+    generatePools = !generatePools;
+    isUpdate = true;
+  }
 </script>
 
 <Sidebar {active} />
@@ -162,7 +202,9 @@
         {#each groups as group}
           <div class="col-12 col-md-6 col-xl-4">
             <div class="card pl-2 pr-2">
-              <div>{group.pool_name}</div>
+              <div class="mt-2 ml-2 mr-2"><p>{group.pool_name} {#if group.active_time == null && group.id}
+                <span on:click="{()=>{deletePool(group)}}" class="float-end material-icons">clear</span>
+              {/if}</p></div>
               <table class="table ml-2 mr-2">
                 <thead>
                   <tr>
@@ -326,6 +368,17 @@
       class="fixed-plugin-button text-dark position-fixed px-3 py-2"
     >
       <i class="material-icons py-2">add</i>
+    </a>
+  </div>
+  {:else}
+  <div class="fixed-plugin">
+    <!-- svelte-ignore a11y-missing-attribute -->
+    <a
+      on:click="{switchView}"
+      style="background-color: purple;"
+      class="fixed-plugin-button text-light position-fixed px-3 py-2"
+    >
+      <i class="material-icons py-2">edit_note</i>
     </a>
   </div>
 {/if}

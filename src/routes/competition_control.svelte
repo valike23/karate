@@ -4,7 +4,7 @@
     const res2 = await this.fetch(`api/kata`);
     const katas = await res2.json();
     const pools = await res.json();
-    console.log(katas);
+    console.log(pools);
     return { pools, katas };
   }
 </script>
@@ -351,13 +351,18 @@ const nextAthleteBtn =()=>{
           >
         </div>
         <div class="col-4">
+
+          <!-- svelte-ignore a11y-missing-content -->
           <h3 class="text-uppercase font-weight-bolder" />
           <br />
+          <!-- svelte-ignore a11y-missing-content -->
           <h4 />
           <br />
+          <!-- svelte-ignore a11y-missing-content -->
           <h4 />
         </div>
-        <div class="text-right col-6"><h4 style="color: red;" /></div>
+        <!-- svelte-ignore a11y-missing-content -->
+        <div class="text-right col-6"><h4 style="color: red;" ></h4></div>
       </div>
       <div class="m-0 row">
         <div class="w-100 col-12">

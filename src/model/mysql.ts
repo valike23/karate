@@ -6,6 +6,10 @@ export interface IjoinTable {
     foriegnKeyColumn: string;
     primaryKeyColumn: string;
 }
+export interface Idelete{
+    feild: string;
+    value: any;
+}
 
 export class SqlHelper {
     dbConfig: ConnectionConfig;
@@ -166,6 +170,69 @@ export class SqlHelper {
             console.log(error)
             reject(error);
            }
+        })
+    }
+    customeDelete(table: string, whereClause: string) {
+        return new Promise((resolve, reject)=>{
+            
+           try {
+            const conn = createConnection(this.dbConfig);
+            conn.query(`DELETE FROM ${table}  ${whereClause}`,  (err, result) => {
+                if (err) {
+                   reject(err);
+                }
+                console.log(result);
+                resolve(result)
+
+            })
+           } catch (error) {
+            console.log(error)
+            reject(error);
+           }
+        })
+    }
+    leftJoin(table: string,  otherTables: Array<IjoinTable>, columns: Array<string>=[], userQuery: string = '') {
+        return new Promise((resolve, reject) => {
+            try {
+                let query = '';
+                if(columns.length > 0){
+                    query = 'SELECT ';
+                    columns.forEach((e,i)=>{
+                        if(i == 0){
+                            query += `${e}`;
+                        }else{
+                            query += ` , ${e}`;
+                        }
+                    })
+                }
+                else{
+                    query = "SELECT * "
+                }
+                query += ` FROM  `;
+               for (let index = 0; index < otherTables.length; index++) {
+                   query += `(`;
+                   
+               }
+                query += ` ${table}  `;
+                for (let index = 0; index < otherTables.length; index++) {
+                    query += `LEFT JOIN ${otherTables[index].name} ON ${table}.${otherTables[index].foriegnKeyColumn} = ${otherTables[index].name}.${otherTables[index].primaryKeyColumn})`;
+                    
+                }
+                query += userQuery;
+                console.log(query);
+                const conn = createConnection(this.dbConfig);
+                conn.query(query, (err, result) => {
+                    if (err) {
+                       reject(err);
+                    }
+                    console.log(result);
+                    resolve(result);
+                })
+            } catch (error) {
+                console.log(error)
+                reject(error);
+            }
+
         })
     }
 }

@@ -1,4 +1,5 @@
 
+import type { Icategory, Ipool } from '../../model/application';
 import {SqlHelper} from '../../model/mysql';
 import { dbconfig } from '../../model/public';
 const sqlHelper = new SqlHelper(dbconfig);
@@ -33,7 +34,7 @@ export async function patch (req, res) {
     try {
         //get active category
 
-        let result = await sqlHelper.get('category',['id'],`where active_time`) as unknown as any[];
+        let result = await sqlHelper.get('category',['id'],`where active=1`) as unknown as any[];
         if(result.length > 0 ){
             let data = await sqlHelper.get('pool',[],`where category_id=${result[0].id} AND active_time IS NULL`);
             res.json(data);
@@ -47,4 +48,23 @@ export async function patch (req, res) {
         res.status(503).json(error);
     }
   
+}
+export async function put(req, res){
+    let competitionId = req.query.id;
+    let categories: any= await sqlHelper.get('category',['id'],`where competition_id=${competitionId}`);
+    let promises = [];
+    categories.forEach((category)=>{
+        promises.push(sqlHelper.get('pool',[],`where category_id = ${category.id} `));
+    });
+  let pools = await Promise.all(promises);
+  console.log(pools);
+
+  let mypools:Ipool[] = [];
+  pools.forEach((pool)=>{
+    pool.forEach((p)=>{
+        mypools.push(p);
+    })
+  })
+  res.json(mypools);
+    
 }

@@ -80,3 +80,22 @@ export async function put (req, res) {
     }
   
 }
+
+export async function patch(req, res) {
+    try {
+        let pools: IpoolAthlete[] = JSON.parse(req.fields.pool);
+        let whereClause = 'where ';
+        pools.forEach((pool,i)=>{
+           whereClause = whereClause + `pool_id = ${pool.pool_id}`;
+           if(pools.length > i + 1){
+               whereClause = whereClause + ' or ';
+           }
+        })
+
+       let data = await sqlHelper.customeDelete('pool_athlete', whereClause);
+       res.json(data);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json(error);
+    }
+}

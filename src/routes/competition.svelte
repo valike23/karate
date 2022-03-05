@@ -10,10 +10,10 @@
       // `this.fetch` is a wrapper around `fetch` that allows
       // you to make credentialled requests on both
       // server and client
-      const res2 = await this.fetch(`api/category`);
-      const categories = await res2.json();
+      const res2 = await this.fetch(`api/competition`);
+      const competitions = await res2.json();
       
-      return {  categories};
+      return {  competitions};
     }
   </script>
   
@@ -22,33 +22,33 @@
 <script lang="ts">
 import Nav from "../components/Nav.svelte";
 import Sidebar from "../components/Sidebar.svelte";
-import type { Icategory } from "../model/application";
+import type { Icategory, Icompetition } from "../model/application";
 import {goto} from '@sapper/app';
 import axios from "axios";
 import { onMount } from "svelte";
 let win;
-let category: Icategory = {};
+let competition: Icompetition = {};
 let active = 'category';
-export let categories: Icategory[];
-const manage = (category: Icategory) => {
-    goto('pools?id='+ category.id)
+export let competitions: Icompetition[];
+const manage = (competition: Icompetition) => {
+    goto('pools_summary?id='+ competition.id)
 }
 const submit =async ()=>{
   let form = new FormData();
-  form.append('category', JSON.stringify(category));
+  form.append('competition', JSON.stringify(competition));
   try {
-    let res = await axios.post(`api/category`, form);
+    let res = await axios.post(`api/competition`, form);
     if(res){
       console.log(res.data);
       win.Swal.fire({
      icon: 'success',
-     title:'category created',
-     'text': 'category have been created successfully.'
+     title:'competition created',
+     'text': 'competition have been created successfully.'
    }).then(()=>{
-     category.id = res.data.insertId;
-    categories.push(category);
-    categories = categories;
-    category ={};
+     competition.id = res.data.insertId;
+    competitions.push(competition);
+    competition = competition;
+    competition ={};
    })
     }
   } catch (error) {
@@ -109,9 +109,7 @@ const stop =async (category:Icategory) => {
      title:'category stopped',
      'text': 'the current category has been stopped.'
    });
-   categories.forEach((c,i)=>{
-      if(c.id == category.id) categories[i].active = false;
-   })
+ 
     }
   }
   else{
@@ -135,7 +133,7 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
 <div class="container-fluid py-4">
 <div class="row">
     <div class="col-12">
-        <h3>manage category</h3>
+        <h3>Manage Competition</h3>
     </div>
 </div>
 <div class="row">
@@ -147,26 +145,42 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
                   <tr>
                     <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">s/n</th>
                     <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2">category name</th>
+                    <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2">status</th>
                     <th colspan="2" class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2">actions</th>
                  
                   </tr>
                 </thead>
                 <tbody>
-                {#each categories as category, i}
+                {#each competitions as competition, i}
                 <tr>
                     <td>
                         <p class="text-xs text-center font-weight-bold mb-0">{i + 1}</p>
                       </td>
                     <td>
-                      <p class="text-xs text-center font-weight-bold mb-0">{#if category.active}
-                        <span class="material-icons mr-2 " style="color: green"> check</span>
-                      {/if}{category.category_name}</p>
+                      <p class="text-xs text-center font-weight-bold mb-0">{competition.competition_name}</p>
                     </td>
+                    <td>
+                        <p class="text-xs text-center font-weight-bold mb-0">{competition.status}</p>
+                      </td>
                     <td colspan="2" class="text-center">
-                        <button class="btn btn-primary btn-sm" on:click="{()=>{manage(category)}}">manage pools</button>
-                        <button class="btn btn-success btn-sm" on:click="{()=>{start(category)}}">start category</button>
-                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(category)}}">stop category</button>
+                       {#if competition.status == 'inactive'}
 
+                       <button class="btn btn-success btn-sm" on:click="{()=>{start(competition)}}">Activate Competition</button>
+                      
+                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(competition)}}">stop category</button>
+
+                        {:else if  competition.status == 'active'}
+                        <button class="btn btn-primary btn-sm" on:click="{()=>{manage(competition)}}">view pools summary</button>
+
+                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(competition)}}">stop competition</button>
+                       
+                        {:else}
+                        <button class="btn btn-primary btn-sm" on:click="{()=>{manage(competition)}}">view pools summary</button>
+
+                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(competition)}}">stop competition</button>
+                       
+                        {/if}
+                       
                     </td>
                   
                   </tr>
@@ -186,8 +200,8 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
   <a
   style="background-color: #F11C68; color: white"
     data-bs-toggle="offcanvas"
-    data-bs-target="#categoryCanvas"
-    aria-controls="categoryCanvas"
+    data-bs-target="#competitionCanvas"
+    aria-controls="competitionCanvas"
     class="fixed-plugin-button text-dark position-fixed px-3 py-2"
   >
     <i style="color: white;" class="material-icons py-2">add</i>
@@ -197,11 +211,11 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
   style="background-color: black; color: white;"
   class="offcanvas offcanvas-start"
   tabindex="-1"
-  id="categoryCanvas"
-  aria-labelledby="categoryCanvasLabel"
+  id="competitionCanvas"
+  aria-labelledby="competitionCanvasLabel"
 >
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="categoryCanvasLabel">Add Category</h5>
+    <h5 class="offcanvas-title" id="competitionCanvasLabel">Add Competition</h5>
     <button
       type="button"
       class="btn-close text-reset"
@@ -215,7 +229,7 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
         <div class="form-group">
           <label for="firstname" class="form-label">Category Name</label>
           <input
-            bind:value={category.category_name}
+            bind:value={competition.competition_name}
             required
             type="text"
             class="form-control"
@@ -234,7 +248,7 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
 
 </main>
 <style>
-  #categoryCanvasLabel{
+  #competitionCanvasLabel{
     color: white;
   }
   input{

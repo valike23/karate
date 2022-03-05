@@ -27,10 +27,10 @@ export async function get (req, res) {
             athlete.last_name = element.last_name;
             athlete.middle_name = element.middle_name;
             athlete.club = {};
-            athlete.club.club_name = element.club_name;
-            athlete.club.flag = element.flag;
+            athlete.club.club_name = element.club_name|| '';
+            athlete.club.flag = element.flag || '';
             athlete.category = {};
-            athlete.category.category_name = element.category_name;
+            athlete.category.category_name = element.category_name || '';
 
             athletes.push(athlete);
         });
@@ -38,7 +38,7 @@ export async function get (req, res) {
         res.json(athletes[0]);
        }
        else{
-        let data: any = await sqlHelper.innerjoin('athlete',[{name: 'category', foriegnKeyColumn:'category_id', primaryKeyColumn: 'id'},
+        let data: any = await sqlHelper.leftJoin('athlete',[{name: 'category', foriegnKeyColumn:'category_id', primaryKeyColumn: 'id'},
         {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}],['athlete.id', 'athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name','club.flag', 'category.category_name']);
         let athletes:Iathlete[] = [];
         data.forEach(element => {

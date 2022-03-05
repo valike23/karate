@@ -4,7 +4,7 @@ import { dbconfig } from '../../model/public';
 const sqlHelper = new SqlHelper(dbconfig);
 export async function post (req, res) {
     try {
-        let data = await sqlHelper.insertQuery(req.body,'category');
+        let data = await sqlHelper.insertQuery(JSON.parse(req.fields.category),'category');
         res.json(data);
     } catch (error) {
         console.log(error);
