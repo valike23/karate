@@ -9,6 +9,7 @@
         });
         const pools: IjudgePool[] = await res.json();
         let judgeAthletes: IjudgeAthleteResult[] = [];
+     
         pools.forEach((pool) => {
             let ja: IjudgeAthleteResult = {};
             ja.first_name = pool.first_name;
@@ -39,6 +40,7 @@
 </script>
 
 <script lang="ts">
+
     import { onMount } from "svelte";
 
     import Nav from "../components/Nav.svelte";
@@ -48,59 +50,93 @@
         IjudgePool,
         IjudgeResult,
     } from "../model/application";
-
+    let printJudges: any[] = [];
     export let judgeAthletes: IjudgeAthleteResult[], poolName;
     let win: any = {};
     let active = "competition";
-    judgeAthletes.forEach((j, i) => {
-        let sortedAthletic = j.judgeResult.sort((a, b) => {
-            return a.athletic_performance - b.athletic_performance;
-        });
+    //console.log(judgeAthletes);
+    const colorJudges =()=>{
+        let test: IjudgeAthleteResult[] = JSON.parse(JSON.stringify(judgeAthletes));
+        
+        console.log( judgeAthletes);
+        test.forEach((j)=>{
+            let athlete: any = {};
+            athlete.athlete_id = j.athlete_id;
+            athlete.first_name = j.first_name;
+            athlete.last_name = j.last_name;
+            let highestAP = 10;
+            let highestTP = 10;
+            let lowestAP = 0;
+            let lowestTP = 0;
+           let athp = JSON.parse(JSON.stringify(j.judgeResult.sort((a,b)=>{
+                return a.athletic_performance - b.athletic_performance;
+            })));
+            athp.forEach((element ,i)=> {
+                j.judgeResult.forEach((e,k)=>{
+                    if(element.judge_id == e.judge_id){
+                        if(i == 0){
+                            j.judgeResult[k].ap_color = 'red'
+                        }
+                        if(i == 4){
+                            j.judgeResult[k].ap_color = 'red'
+                        }
+                    }
+                })
+            });
+            let tecp = JSON.parse(JSON.stringify(j.judgeResult.sort((a,b)=>{
+                return a.technical_performance - b.technical_performance;
+            })));
+            tecp.forEach((element ,i)=> {
+                j.judgeResult.forEach((e,k)=>{
+                    if(element.judge_id == e.judge_id){
+                        if(i == 0){
+                            j.judgeResult[k].tc_color = 'red'
+                        }
+                        if(i == 4){
+                            j.judgeResult[k].tc_color = 'red'
+                        }
+                    }
+                })
+            });
+            let finalAp = 0;
+            let finalTp = 0;
+            j.judgeResult.filter((p)=>{
+               if(p.ap_color != "red"){
+                finalAp = finalAp +  p.athletic_performance
+               }
+               if(p.tc_color != "red"){
+                finalTp = finalTp +  p.technical_performance
+               }
+            });
+            finalAp = finalAp * 0.3;
+            finalTp = finalTp * 0.7;
+           
 
-        let sortedTech = j.judgeResult.sort((a, b) => {
-            return a.technical_performance - b.technical_performance;
-        });
-        console.log("sorted:", sortedTech);
-        j.judgeResult.forEach((r, j) => {
-            
-        console.log('just j here:',judgeAthletes);
-            if (judgeAthletes[i].judgeResult.length == 5) {
-                sortedAthletic[0].ap_color = "red";
-                sortedAthletic[4].ap_color = "red";
-            }
-            if (judgeAthletes[i].judgeResult.length == 7) {
-                sortedAthletic[0].ap_color = "red";
-                sortedAthletic[1].ap_color = "red";
-                sortedAthletic[5].ap_color = "red";
-                sortedAthletic[6].ap_color = "red";
-            }
-            sortedAthletic.forEach((a) => {
-                if (a.judge_id == r.judge_id) {
-                    judgeAthletes[i].judgeResult[j].ap_color = a.ap_color;
+            j.judgeResult.forEach((judge,i)=>{
+               
+                athlete['judge' +judge.judge_id] = {
+                    id: judge.judge_id,
+                    athletic_performance: judge.athletic_performance,
+                    ap_color: judge.ap_color || '',
+                    tc_color: judge.tc_color || '',
+                    technical_performance: judge.technical_performance
+                    
                 }
-            });
-            if (judgeAthletes[i].judgeResult.length == 5) {
-                sortedTech[0].tc_color = "red";
-                sortedTech[4].tc_color = "red";
-            }
-            if (judgeAthletes[i].judgeResult.length == 7) {
-                sortedTech[0].ap_color = "red";
-                sortedTech[1].ap_color = "red";
-                sortedTech[5].ap_color = "red";
-                sortedTech[6].ap_color = "red";
-            }
-            sortedTech.forEach((a) => {
-                if (a.judge_id == r.judge_id) {
-                    judgeAthletes[i].judgeResult[j].tc_color = a.tc_color;
-                }
-            });
-          
-        });
-        console.log('sorted tech:::::',sortedTech)
-    });
+            })
+            athlete.finalAp = finalAp;
+            athlete.finalTp = finalTp;
+            printJudges.push(athlete);
+
+        })
+        console.log(printJudges);
+        //color print judge
+      
+    }
+    colorJudges();
     onMount(() => {
-        console.log(judgeAthletes);
-
+    
+       
+       
     });
 </script>
 
@@ -112,7 +148,7 @@
 
     <div class="container-fluid py-4">
         <div class="row">
-            <h3>Pool Details {poolName}</h3>
+            <h3>{poolName}</h3>
         </div>
         <div class="row">
             <div class="col-12">
@@ -142,10 +178,22 @@
                                             >j{i + 1}</th
                                         >
                                     {/each}
+                                    <th
+                                        class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                        >FAC</th
+                                    >
+                                    <th
+                                    class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                    >Score</th
+                                >
+                                <th
+                                class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                >Total</th
+                            >
                                 </tr>
                             </thead>
                             <tbody>
-                                {#each judgeAthletes as pool, i}
+                                {#each printJudges as pool, i}
                                     <tr>
                                         <td>
                                             <p
@@ -173,37 +221,37 @@
                                             <p>TEC</p>
                                             <p>ATH</p>
                                         </td>
-                                        {#each pool.judgeResult as result,i}
-                                            <td
-                                                >
-                                               {#if pool.judgeResult[1].judge_id == i + 1}
-                                                   <p class:red={pool.judgeResult[1].tc_color }>{pool.judgeResult[1].technical_performance}</p>
-                                                   <br>
-                                                   <p class:red={pool.judgeResult[1].ap_color}>{pool.judgeResult[1].athletic_performance}</p>
-                                               {/if}
-                                               {#if pool.judgeResult[2].judge_id == i + 1}
-                                               <p class:red={pool.judgeResult[2].tc_color}>{pool.judgeResult[2].technical_performance}</p>
-                                               <br>
-                                               <p class:red={pool.judgeResult[2].ap_color}>{pool.judgeResult[2].athletic_performance}</p>
-                                           {/if}
-                                           {#if pool.judgeResult[0].judge_id == i + 1}
-                                           <p class:red={pool.judgeResult[0].tc_color}>{pool.judgeResult[0].technical_performance}</p>
-                                           <br>
-                                           <p class:red={pool.judgeResult[0].ap_color}>{pool.judgeResult[0].athletic_performance}</p>
-                                       {/if}
-                                       {#if pool.judgeResult[3].judge_id == i + 1}
-                                       <p class:red={pool.judgeResult[3].tc_color}>{pool.judgeResult[3].technical_performance}</p>
-                                       <br>
-                                       <p class:red={pool.judgeResult[3].ap_color}>{pool.judgeResult[3].athletic_performance}</p>
-                                   {/if}
-                                   {#if pool.judgeResult[4].judge_id == i + 1}
-                                   <p class:red={pool.judgeResult[4].tc_color}>{pool.judgeResult[4].technical_performance}</p>
-                                   <br>
-                                   <p class:red={pool.judgeResult[4].ap_color}>{pool.judgeResult[4].athletic_performance}</p>
-                               {/if}
-                                                </td
-                                            >
-                                        {/each}
+                                       
+                                      <td >
+                                          <p class="{pool.judge1.ap_color}">{pool.judge1.athletic_performance}</p>
+                                          <p class="{pool.judge1.tc_color}">{pool.judge1.technical_performance}</p>
+                                      </td>
+                                      <td >
+                                        <p class="{pool.judge2.ap_color}">{pool.judge2.athletic_performance}</p>
+                                        <p class="{pool.judge2.tc_color}">{pool.judge2.technical_performance}</p>
+                                    </td>
+                                    <td >
+                                        <p class="{pool.judge3.ap_color}">{pool.judge3.athletic_performance}</p>
+                                        <p class="{pool.judge3.tc_color}">{pool.judge3.technical_performance}</p>
+                                    </td>
+                                    <td >
+                                        <p class="{pool.judge4.ap_color}">{pool.judge4.athletic_performance}</p>
+                                        <p class="{pool.judge4.tc_color}">{pool.judge4.technical_performance}</p>
+                                    </td>
+                                    <td >
+                                        <p class="{pool.judge5.ap_color}">{pool.judge5.athletic_performance}</p>
+                                        <p class="{pool.judge5.tc_color}">{pool.judge5.technical_performance}</p>
+                                    </td>
+                                        <td>
+                                          <p> <strong> *0.7</strong> </p><br> <p><strong>*0.3</strong></p>
+                                        </td>
+                                        <td>
+                                            <p>{(pool.finalTp).toFixed(2)}</p>
+                                            <p>{(pool.finalAp).toFixed(2)}</p>
+                                        </td>
+                                        <td>
+                                            <p>{(pool.finalAp + pool.finalTp).toFixed(2)}</p>
+                                        </td>
                                     </tr>
                                 {/each}
                             </tbody>
@@ -216,7 +264,8 @@
 </main>
 
 <style>
-    .red{
-        color: red
+    .red {
+        color: red;
+        text-decoration: line-through;
     }
 </style>
