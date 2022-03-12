@@ -11,7 +11,7 @@ let local: ConnectionConfig = {
     host: 'localhost',
     password: '',
     user: 'root',
-    database: 'kata'
+    database: 'kata2'
 }
 
 

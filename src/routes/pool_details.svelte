@@ -42,7 +42,6 @@
 <script lang="ts">
 
     import { onMount } from "svelte";
-
     import Nav from "../components/Nav.svelte";
     import Sidebar from "../components/Sidebar.svelte";
     import type {
@@ -64,10 +63,6 @@
             athlete.athlete_id = j.athlete_id;
             athlete.first_name = j.first_name;
             athlete.last_name = j.last_name;
-            let highestAP = 10;
-            let highestTP = 10;
-            let lowestAP = 0;
-            let lowestTP = 0;
            let athp = JSON.parse(JSON.stringify(j.judgeResult.sort((a,b)=>{
                 return a.athletic_performance - b.athletic_performance;
             })));
@@ -135,9 +130,13 @@
     colorJudges();
     onMount(() => {
     
-       
+       win = window;
        
     });
+    const print =()=>{
+        console.log(win);
+        win.print();
+    }
 </script>
 
 <Sidebar {active} />
@@ -148,12 +147,12 @@
 
     <div class="container-fluid py-4">
         <div class="row">
-            <h3>{poolName}</h3>
+            <h3>{poolName} <button class="btn btn-sm btn-secondary float-end" on:click="{print}">print</button></h3>
         </div>
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="table-responsive">
+                    <div id="table" class="table-responsive">
                         <table class="table align-items-center mb-0">
                             <thead>
                                 <tr>
