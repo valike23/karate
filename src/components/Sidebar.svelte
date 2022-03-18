@@ -57,7 +57,7 @@ id="sidenav-main"
       </a>
     </li>
     <li class="nav-item">
-      <a class:active={active == 'athlete'} class:bg-gradient-primary={active == 'athlete'} class="nav-link text-white " href="/manage_athlete">
+      <a rel="external" class:active={active == 'athlete'} class:bg-gradient-primary={active == 'athlete'} class="nav-link text-white " href="/manage_athlete">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >

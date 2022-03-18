@@ -1,10 +1,13 @@
 
+import type { Icategory } from '../../model/application';
 import {SqlHelper} from '../../model/mysql';
 import { dbconfig } from '../../model/public';
 const sqlHelper = new SqlHelper(dbconfig);
 export async function post (req, res) {
     try {
-        let data = await sqlHelper.insertQuery(JSON.parse(req.fields.category),'category');
+        let category: Icategory = JSON.parse(req.fields.category);
+        category.competition_id = req.session.competition;
+        let data = await sqlHelper.insertQuery(category,'category');
         res.json(data);
     } catch (error) {
         console.log(error);
@@ -13,7 +16,8 @@ export async function post (req, res) {
 }
 export async function get (req, res) {
     try {
-        let data = await sqlHelper.get('category');
+        console.log(req.session);
+        let data = await sqlHelper.get('category',[], `where competition_id =${req.session.competition}`);
         res.json(data);
     } catch (error) {
         console.log(error);

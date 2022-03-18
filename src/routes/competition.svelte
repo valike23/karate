@@ -28,7 +28,7 @@ import axios from "axios";
 import { onMount } from "svelte";
 let win;
 let competition: Icompetition = {};
-let active = 'category';
+let active = 'competition';
 export let competitions: Icompetition[];
 const manage = (competition: Icompetition) => {
     goto('pools_summary?id='+ competition.id)
@@ -62,39 +62,31 @@ const submit =async ()=>{
 onMount(()=>{
   win = window;
 })
-const start = async (category: Icategory)=>{
+const start = async (competition: Icompetition)=>{
   //check if they are pools in this category
- let res = await axios.get(`api/pools?id=${category.id}`);
- if(res.data.length > 0){
-    //start the current category and set
-    //there have to be no active category
-
-    let res2 = await axios.patch(`api/category`);
-    if(res2.data.length == 0){
-      let respond = await axios.put(`api/category?id=`+ category.id);
-    if(respond.data){
-      console.log(respond.data);
-      win.Swal.fire({
+ let res = await axios.patch(`api/competition?id=${competition.id}`);
+ if(res.data.msg == 'success'){
+  let response = await win.Swal.fire({
      icon: 'success',
-     title:'category have been activated',
-     'text': 'category have been activated successfully.'
-   })
-    }
-    }
-    else{
-      win.Swal.fire({
-     icon: 'error',
-     title:'you cant start this category',
-     'text': 'you can\'t start this category because there is already an active category.'
-   })
-    }
+     title:'competiton active',
+     'text': 'this competition has been set as the active competition'
+   });
+   if(response){
+     competitions.forEach((comp, i)=>{
+        if(comp.id == competition.id) {
+          competitions[i].status = 'active';
+
+        }
+     })
+   }
+   competitions = competitions;
    
  }
  else{
    win.Swal.fire({
      icon: 'error',
-     title:'you cant start this category',
-     'text': 'you can\'t start this category because this category does not have a pool.'
+     title:'you cant activate competiton',
+     'text': 'you can\'t activate this competition please contact admin.'
    })
  }
 }
@@ -167,7 +159,7 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
 
                        <button class="btn btn-success btn-sm" on:click="{()=>{start(competition)}}">Activate Competition</button>
                       
-                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(competition)}}">stop category</button>
+                        <button class="btn btn-warning btn-sm">stop category</button>
 
                         {:else if  competition.status == 'active'}
                         <button class="btn btn-primary btn-sm" on:click="{()=>{manage(competition)}}">view pools summary</button>

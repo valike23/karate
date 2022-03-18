@@ -34,6 +34,7 @@ const manage = (category: Icategory) => {
     goto('pools?id='+ category.id)
 }
 const submit =async ()=>{
+  alert();
   let form = new FormData();
   form.append('category', JSON.stringify(category));
   try {

@@ -7,11 +7,17 @@ import { Socket, Server } from 'socket.io';
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 
+var session = require("express-session");
 import * as http from 'http';
 
 let app = express();
 
 app.use(
+	session({
+		secret: 'keyboard cat',
+		resave: true,
+		saveUninitialized: false
+	  }),
 		formidable(),
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),

@@ -6,7 +6,9 @@ import { dbconfig } from '../../model/public';
 const sqlHelper = new SqlHelper(dbconfig);
 export async function post (req, res) {
     try {
-        let data = await sqlHelper.insertQuery(JSON.parse(req.fields.athlete),'athlete');
+        let athlete: Iathlete  = JSON.parse(req.fields.athlete);
+        athlete.competition_id = req.session.competition;
+        let data = await sqlHelper.insertQuery(athlete,'athlete');
         res.json(data);
     } catch (error) {
         console.log(error);
@@ -39,7 +41,9 @@ export async function get (req, res) {
        }
        else{
         let data: any = await sqlHelper.leftJoin('athlete',[{name: 'category', foriegnKeyColumn:'category_id', primaryKeyColumn: 'id'},
-        {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}],['athlete.id', 'athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name','club.flag', 'category.category_name']);
+        {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}],
+        ['athlete.id', 'athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name','club.flag', 'category.category_name'],
+        `where competition_id = ${req.session.competition}`);
         let athletes:Iathlete[] = [];
         data.forEach(element => {
             let athlete:Iathlete =  {};
@@ -80,6 +84,7 @@ export async function put(req, res) {
                 athlete.first_name = e.firstName;
                 athlete.last_name = e.lastName;
                 athlete.middle_name = e.otherNames;
+                athlete.competition_id = req.session.competition;
                try {
                 athlete.state_id = clubs.find((club)=>{
                     return club.club_name == e.state

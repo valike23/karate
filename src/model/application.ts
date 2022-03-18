@@ -5,12 +5,14 @@ export interface  Iclub{
     flag?: string;
 }
 export interface Icategory{
+    competition_id?: any;
     id?: number;
     category_name?: string;
     active?: boolean;
 }
 
 export interface Iathlete {
+    competition_id?: any;
     id?: number;
     active_time?: Date | string;
     result?: number;

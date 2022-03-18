@@ -1,8 +1,17 @@
-<script>
-  import successkid from "images/successkid.jpg";
+<script >
+import axios from "axios";
+
   import { onMount } from "svelte";
-import Sidebar from "../components/Sidebar.svelte";
-  onMount(() => {
+  import Sidebar from "../components/Sidebar.svelte";
+  onMount( async() => {
+    let res = await axios.put(`api/competition`);
+    if(res.data.msg == 'set'){
+      alert('competition is already set');
+    }
+    else{
+      alert('there is no active competition');
+      location.href = '/competition';
+    }
     var ctx = document.getElementById("chart-bars").getContext("2d");
 
     new Chart(ctx, {
@@ -252,14 +261,14 @@ import Sidebar from "../components/Sidebar.svelte";
       },
     });
   });
-  let active = 'home';
+  let active = "home";
 </script>
 
 <svelte:head>
   <title>Sapper project template</title>
 </svelte:head>
 
-<Sidebar {active}/>
+<Sidebar {active} />
 <main
   class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
 >
