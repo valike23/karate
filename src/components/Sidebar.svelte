@@ -19,7 +19,7 @@ id="sidenav-main"
     target="_blank"
   >
     <img
-      src="./assets/img/logo-ct.png"
+      src="logo.png"
       class="navbar-brand-img h-100"
       alt="main_logo"
     />
@@ -47,7 +47,7 @@ id="sidenav-main"
       </a>
     </li>
     <li class="nav-item">
-      <a class:active={active == 'competition'} class:bg-gradient-primary={active == 'competition'} class="nav-link text-white " href="/competition">
+      <a rel="external " class:active={active == 'competition'} class:bg-gradient-primary={active == 'competition'} class="nav-link text-white " href="/competition">
         <div
           class="text-white text-center me-2 d-flex align-items-center justify-content-center"
         >
@@ -63,7 +63,7 @@ id="sidenav-main"
         >
           <i class="material-icons opacity-10">add</i>
         </div>
-        <span class="nav-link-text ms-1">Manage Athelete</span>
+        <span class="nav-link-text ms-1">Entries</span>
       </a>
     </li>
     <li class="nav-item">

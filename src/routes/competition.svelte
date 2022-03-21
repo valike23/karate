@@ -85,35 +85,43 @@ const start = async (competition: Icompetition)=>{
  else{
    win.Swal.fire({
      icon: 'error',
-     title:'you cant activate competiton',
-     'text': 'you can\'t activate this competition please contact admin.'
+     title: 'you cant activate competiton',
+     'text': res.data.msg ||  'you can\'t activate this competition please contact admin.'
    })
  }
 }
 
-const stop =async (category:Icategory) => {
-  if(category.active){
+const stop =async (competition:Icompetition) => {
+  if(competition.status == 'active'){
 
-    let respond = await axios.put(`api/category?id=${category.id}&status=deactivate`);
+    let respond = await axios.delete(`api/competition?id=${competition.id}`);
     if(respond.data){
-      win.Swal.fire({
-     icon: 'sucess',
-     title:'category stopped',
-     'text': 'the current category has been stopped.'
+    let alert = await  win.Swal.fire({
+     icon: 'success',
+     title:'competition finished',
+     'text': 'the current competition has ended.'
    });
+   if(alert){
+     competitions.forEach((comp, i)=>{
+      if(competition.id == comp.id) return competitions[i].status = 'finished';
+     })
+   }
  
     }
   }
   else{
     win.Swal.fire({
      icon: 'error',
-     title:'category is not active',
-     'text': 'the current category is not active so cannot be deactivated.'
+     title:'competition is not active',
+     'text': 'the current competition is not active so cannot be deactivated.'
    })
   }
 }
 </script>
 
+<svelte:head>
+  <title>Manage Competitions</title>
+</svelte:head>
 
 
 <Sidebar {active}/>
@@ -159,17 +167,15 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
 
                        <button class="btn btn-success btn-sm" on:click="{()=>{start(competition)}}">Activate Competition</button>
                       
-                        <button class="btn btn-warning btn-sm">stop category</button>
+                      
 
                         {:else if  competition.status == 'active'}
                         <button class="btn btn-primary btn-sm" on:click="{()=>{manage(competition)}}">view pools summary</button>
 
-                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(competition)}}">stop competition</button>
+                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(competition)}}">finish competition</button>
                        
                         {:else}
                         <button class="btn btn-primary btn-sm" on:click="{()=>{manage(competition)}}">view pools summary</button>
-
-                        <button class="btn btn-warning btn-sm" on:click="{()=>{stop(competition)}}">stop competition</button>
                        
                         {/if}
                        

@@ -43,7 +43,7 @@ export async function get (req, res) {
         let data: any = await sqlHelper.leftJoin('athlete',[{name: 'category', foriegnKeyColumn:'category_id', primaryKeyColumn: 'id'},
         {name: 'club', foriegnKeyColumn:'state_id', primaryKeyColumn: 'id'}],
         ['athlete.id', 'athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name','club.flag', 'category.category_name'],
-        `where competition_id = ${req.session.competition}`);
+        `where athlete.competition_id = ${req.session.competition}`);
         let athletes:Iathlete[] = [];
         data.forEach(element => {
             let athlete:Iathlete =  {};
@@ -72,7 +72,7 @@ export async function get (req, res) {
 export async function put(req, res) {
         try {
            let clubs: Iclub[] = await sqlHelper.get('club') as unknown as any as Iclub[];
-           let categories: Icategory[] = await sqlHelper.get('category') as unknown as any as Icategory[];
+           let categories: Icategory[] = await sqlHelper.get('category',[],`where competition_id = ${req.session.competition}`) as unknown as any as Icategory[];
             const workbook = readFile(req.files.excel.path);
         let athletes: Iathlete[] = [];
       let sheet:IexcelAthlete[] = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);

@@ -2,10 +2,12 @@
   export async function preload(page) {
     const res = await this.fetch(`api/pools`, { method: "PATCH" });
     const res2 = await this.fetch(`api/kata`);
+    const res3 = await this.fetch(`api/competition?id=test`);
     const katas = await res2.json();
     const pools = await res.json();
-    console.log(pools);
-    return { pools, katas };
+    const competition = res3.json();
+    console.log('the competition should be working now',competition);
+    return { pools, katas, competition };
   }
 </script>
 
@@ -19,12 +21,13 @@ let pause = false;
   import Sidebar from "../components/Sidebar.svelte";
   import type {
     Iathlete,
+    Icompetition,
     IjudgePool,
     Ikata,
     Ipool,
   } from "../model/application";
   let active = "control";
-  export let pools: Ipool[], katas: Ikata[];
+  export let pools: Ipool[], katas: Ikata[],competition: Icompetition;
   let poolAthletes: Iathlete[] = [];
   let kata = "";
   let win, modal;
@@ -264,6 +267,11 @@ const nextAthleteBtn =()=>{
   <Nav />
 
   <div class="container-fluid py-4">
+    <div class="row mb-5">
+      <div class="col">
+       <p><strong>current competition: </strong>:{competition.competition_name} </p> 
+      </div>
+    </div>
     <div class="row mb-5">
       <div class="col-6 col-sm-3">
         <div class="form-group">
