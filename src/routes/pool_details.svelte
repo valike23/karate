@@ -2,7 +2,6 @@
     export async function preload(page) {
         let query = page.query;
         //retrieve all records needed to work this page
-
         const poolName = query.name;
         const res = await this.fetch(`api/judge_pool?id=${query.id}`, {
             method: "PUT",
@@ -51,11 +50,18 @@
     } from "../model/application";
     let printJudges: any[] = [];
     export let judgeAthletes: IjudgeAthleteResult[], poolName;
+    if(judgeAthletes.length == 0){
+        judgeAthletes[0]={}
+    }
     let win: any = {};
     let active = "competition";
     //console.log(judgeAthletes);
+    const goback = ()=>{
+        window.history.back();
+    }
     const colorJudges =()=>{
-        let test: IjudgeAthleteResult[] = JSON.parse(JSON.stringify(judgeAthletes));
+        try {
+            let test: IjudgeAthleteResult[] = JSON.parse(JSON.stringify(judgeAthletes));
         
         console.log( judgeAthletes);
         test.forEach((j)=>{
@@ -125,12 +131,16 @@
         })
         console.log(printJudges);
         //color print judge
+        } catch (error) {
+            console.log(error);
+        }
       
     }
     colorJudges();
     onMount(() => {
     
        win = window;
+       
        
     });
     const print =()=>{
@@ -145,121 +155,135 @@
 >
     <Nav />
 
-    <div class="container-fluid py-4">
-        <div class="row">
-            <h3>{poolName} <button class="btn btn-sm btn-secondary float-end" on:click="{print}">print</button></h3>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div id="table" class="table-responsive">
-                        <table class="table align-items-center mb-0">
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7"
-                                        >s/n</th
-                                    >
-                                    <th
-                                        class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                        >first name</th
-                                    >
-                                    <th
-                                        class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                        >last name</th
-                                    >
-                                    <th
-                                        class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                    />
-                                    {#each judgeAthletes[0].judgeResult as item, i}
-                                        <th
-                                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                            >j{i + 1}</th
-                                        >
-                                    {/each}
-                                    <th
-                                        class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                        >FAC</th
-                                    >
-                                    <th
+   {#if judgeAthletes[0].athlete_id}
+   <div class="container-fluid py-4">
+    <div class="row">
+        <h3>{poolName} <button class="btn btn-sm btn-secondary float-end" on:click="{print}">print</button></h3>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div id="table" class="table-responsive">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7"
+                                    >s/n</th
+                                >
+                                <th
                                     class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                    >Score</th
+                                    >first name</th
+                                >
+                                <th
+                                    class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                    >last name</th
+                                >
+                                <th
+                                    class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                />
+                                {#each judgeAthletes[0].judgeResult as item, i}
+                                    <th
+                                        class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                        >j{i + 1}</th
+                                    >
+                                {/each}
+                                <th
+                                    class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                                    >FAC</th
                                 >
                                 <th
                                 class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
-                                >Total</th
+                                >Score</th
                             >
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {#each printJudges as pool, i}
-                                    <tr>
-                                        <td>
-                                            <p
-                                                class="text-xs text-center font-weight-bold mb-0"
-                                            >
-                                                {i + 1}
-                                            </p>
-                                        </td>
-                                        <td>
-                                            <p
-                                                class="text-xs text-center font-weight-bold mb-0"
-                                            >
-                                                {pool.first_name}
-                                            </p>
-                                        </td>
-                                        <td>
-                                            <p
-                                                class="text-xs text-center font-weight-bold mb-0"
-                                            >
-                                                {pool.last_name}
-                                            </p>
-                                        </td>
+                            <th
+                            class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                            >Total</th
+                        >
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each printJudges as pool, i}
+                                <tr>
+                                    <td>
+                                        <p
+                                            class="text-xs text-center font-weight-bold mb-0"
+                                        >
+                                            {i + 1}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p
+                                            class="text-xs text-center font-weight-bold mb-0"
+                                        >
+                                            {pool.first_name}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <p
+                                            class="text-xs text-center font-weight-bold mb-0"
+                                        >
+                                            {pool.last_name}
+                                        </p>
+                                    </td>
 
-                                        <td class="text-center">
-                                            <p>TEC</p>
-                                            <p>ATH</p>
-                                        </td>
-                                       
-                                      <td >
-                                          <p class="{pool.judge1.ap_color}">{pool.judge1.athletic_performance}</p>
-                                          <p class="{pool.judge1.tc_color}">{pool.judge1.technical_performance}</p>
-                                      </td>
-                                      <td >
-                                        <p class="{pool.judge2.ap_color}">{pool.judge2.athletic_performance}</p>
-                                        <p class="{pool.judge2.tc_color}">{pool.judge2.technical_performance}</p>
+                                    <td class="text-center">
+                                        <p>TEC</p>
+                                        <p>ATH</p>
                                     </td>
-                                    <td >
-                                        <p class="{pool.judge3.ap_color}">{pool.judge3.athletic_performance}</p>
-                                        <p class="{pool.judge3.tc_color}">{pool.judge3.technical_performance}</p>
+                                   
+                                  <td >
+                                      <p class="{pool.judge1.ap_color}">{pool.judge1.athletic_performance}</p>
+                                      <p class="{pool.judge1.tc_color}">{pool.judge1.technical_performance}</p>
+                                  </td>
+                                  <td >
+                                    <p class="{pool.judge2.ap_color}">{pool.judge2.athletic_performance}</p>
+                                    <p class="{pool.judge2.tc_color}">{pool.judge2.technical_performance}</p>
+                                </td>
+                                <td >
+                                    <p class="{pool.judge3.ap_color}">{pool.judge3.athletic_performance}</p>
+                                    <p class="{pool.judge3.tc_color}">{pool.judge3.technical_performance}</p>
+                                </td>
+                                <td >
+                                    <p class="{pool.judge4.ap_color}">{pool.judge4.athletic_performance}</p>
+                                    <p class="{pool.judge4.tc_color}">{pool.judge4.technical_performance}</p>
+                                </td>
+                                <td >
+                                    <p class="{pool.judge5.ap_color}">{pool.judge5.athletic_performance}</p>
+                                    <p class="{pool.judge5.tc_color}">{pool.judge5.technical_performance}</p>
+                                </td>
+                                    <td>
+                                      <p> <strong> *0.7</strong> </p><br> <p><strong>*0.3</strong></p>
                                     </td>
-                                    <td >
-                                        <p class="{pool.judge4.ap_color}">{pool.judge4.athletic_performance}</p>
-                                        <p class="{pool.judge4.tc_color}">{pool.judge4.technical_performance}</p>
+                                    <td>
+                                        <p>{(pool.finalTp).toFixed(2)}</p>
+                                        <p>{(pool.finalAp).toFixed(2)}</p>
                                     </td>
-                                    <td >
-                                        <p class="{pool.judge5.ap_color}">{pool.judge5.athletic_performance}</p>
-                                        <p class="{pool.judge5.tc_color}">{pool.judge5.technical_performance}</p>
+                                    <td>
+                                        <p>{(pool.finalAp + pool.finalTp).toFixed(2)}</p>
                                     </td>
-                                        <td>
-                                          <p> <strong> *0.7</strong> </p><br> <p><strong>*0.3</strong></p>
-                                        </td>
-                                        <td>
-                                            <p>{(pool.finalTp).toFixed(2)}</p>
-                                            <p>{(pool.finalAp).toFixed(2)}</p>
-                                        </td>
-                                        <td>
-                                            <p>{(pool.finalAp + pool.finalTp).toFixed(2)}</p>
-                                        </td>
-                                    </tr>
-                                {/each}
-                            </tbody>
-                        </table>
-                    </div>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
+   {:else}
+   <div class="container-fluid py-4">
+    <div class="row">
+        <h3>{poolName}</h3>
+   <div class="row">
+       <div class="col-12">
+           <h2 class="centered">This pool has no data</h2>
+           <button class="btn btn-primary" on:click="{goback}">Go back to competition</button>
+       </div>
+   </div>
+    </div>
+   </div>
+   {/if}
 </main>
 
 <style>

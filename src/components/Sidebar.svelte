@@ -53,7 +53,7 @@ id="sidenav-main"
         >
           <i class="material-icons opacity-10">add</i>
         </div>
-        <span class="nav-link-text ms-1">Manage Competition</span>
+        <span class="nav-link-text ms-1">Events</span>
       </a>
     </li>
     <li class="nav-item">

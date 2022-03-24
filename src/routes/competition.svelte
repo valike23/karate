@@ -31,7 +31,7 @@ let competition: Icompetition = {};
 let active = 'competition';
 export let competitions: Icompetition[];
 const manage = (competition: Icompetition) => {
-    goto('pools_summary?id='+ competition.id)
+    goto('pools_summary?id='+ competition.id);
 }
 const submit =async ()=>{
   let form = new FormData();

@@ -24,7 +24,8 @@ export async function get (req, res) {
 
 export async function put (req, res){
     try {
-      let data = await  sqlHelper.innerjoin('judge_pool_athlete',[{name:'athlete', foriegnKeyColumn: 'athlete_id', primaryKeyColumn:'id'}]);
+      let data = await  sqlHelper.innerjoin('judge_pool_athlete',[{name:'athlete', foriegnKeyColumn: 'athlete_id', primaryKeyColumn:'id'}],[],
+      `where pool_id=${req.query.id}`);
         console.log(data);
         res.json(data);
     } catch (error) {
