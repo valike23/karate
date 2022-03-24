@@ -65,7 +65,7 @@ export async function patch(req, res) {
         //check if there is an active competition
         let result2: any = await sqlHelper.get('competition',[],`where status = 'active'`);
         console.log('big story', result2);
-        if(result2.length < 0){
+        if(result2.length == 0){
             let result: any = await sqlHelper.updateQuery('competition',{status: 'active'}, `where id =${req.query.id}`);
            // console.log(result);
             req.session.competition = req.query.id;

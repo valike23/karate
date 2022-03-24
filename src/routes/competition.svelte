@@ -225,14 +225,14 @@ class="main-content position-relative max-height-vh-100 h-100 border-radius-lg "
     <form on:submit|preventDefault={submit} class="row">
       <div class="col-12 mb-2">
         <div class="form-group">
-          <label for="firstname" class="form-label">Category Name</label>
+          <label for="firstname" class="form-label">Competition Name</label>
           <input
             bind:value={competition.competition_name}
             required
             type="text"
             class="form-control"
             id="firstname"
-            placeholder="enter category name"
+            placeholder="enter competition name"
           />
         </div>
       </div>

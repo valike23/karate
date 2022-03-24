@@ -11,7 +11,6 @@ export async function post (req, res) {
         let data = await sqlHelper.insertQuery(athlete,'athlete');
         res.json(data);
     } catch (error) {
-        console.log(error);
         res.status(503).json(error);
     }
 }
@@ -36,7 +35,6 @@ export async function get (req, res) {
 
             athletes.push(athlete);
         });
-        console.log(athletes);
         res.json(athletes[0]);
        }
        else{
@@ -59,11 +57,9 @@ export async function get (req, res) {
 
             athletes.push(athlete);
         });
-        console.log(athletes);
         res.json(athletes);
        }
     } catch (error) {
-        console.log(error);
         res.status(503).json(error);
     }
   
@@ -76,7 +72,7 @@ export async function put(req, res) {
             const workbook = readFile(req.files.excel.path);
         let athletes: Iathlete[] = [];
       let sheet:IexcelAthlete[] = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-      console.log(clubs);
+   
       if(clubs){
           if(categories){
             sheet.forEach((e)=>{
@@ -86,6 +82,7 @@ export async function put(req, res) {
                 athlete.middle_name = e.otherNames;
                 athlete.competition_id = req.session.competition;
                try {
+                   console.log(e);
                 athlete.state_id = clubs.find((club)=>{
                     return club.club_name == e.state
                  }).id;
@@ -98,14 +95,14 @@ export async function put(req, res) {
 
                 athletes.push(athlete);
               });
-              console.log(athletes);
+            
               let promises = [];
               athletes.forEach((e, i)=>{
                let promise = sqlHelper.insertQuery(e,'athlete');
                promises.push(promise);
               })
               Promise.all(promises).then((values)=>{
-                console.log(values);
+              
                 res.json(values);
               })
 
@@ -115,7 +112,7 @@ export async function put(req, res) {
       }
      
         } catch (error) {
-            console.log(error);
+      
         res.status(503).json(error);
         }
 }
@@ -128,7 +125,6 @@ export async function patch(req, res) {
        let data: any = await sqlHelper.innerjoin('athlete',[{primaryKeyColumn: 'id', foriegnKeyColumn: 'state_id',name:'club'}],
        ['athlete.id','athlete.first_name','athlete.last_name','athlete.middle_name','club.club_name', 'club.flag'],`where ${name} = ${value}`);
        data.forEach(element => {
-           console.log(element.id);
         let athlete:Iathlete =  {};
         athlete.id = element.id;
         athlete.first_name = element.first_name;
@@ -142,7 +138,6 @@ export async function patch(req, res) {
     });
        res.json(athletes);
     } catch (error) {
-        console.log(error);
         res.status(503).json(error);
     }
 }
@@ -152,7 +147,6 @@ export async function del(req, res) {
       let data = await  sqlHelper.genericDelete('athlete', req.query.id);
       res.json(data);
     } catch (error) {
-        console.log(error);
         res.status(503).json(error);
     }
 }
