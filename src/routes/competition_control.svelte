@@ -2,10 +2,10 @@
   export async function preload(page) {
     const res = await this.fetch(`api/pools`, { method: "PATCH" });
     const res2 = await this.fetch(`api/kata`);
-    const res3 = await this.fetch(`api/competition?id=test`);
+    const res3 = await this.fetch(`api/competition?id=2`);
     const katas = await res2.json();
     const pools = await res.json();
-    const competition = res3.json();
+    const competition = await res3.json();
     console.log('the competition should be working now',competition);
     return { pools, katas, competition };
   }
@@ -348,7 +348,7 @@ const nextAthleteBtn =()=>{
         </div>
       </div>
     {/if}
-    {#if showJudges}
+   
       <div class="ml-2 row mt-5">
         <div
           class="py-5 col-2"
@@ -431,7 +431,7 @@ const nextAthleteBtn =()=>{
       </div>
       <br />
       <br />
-    {/if}
+   
   </div>
 </main>
 <div id="kata" class="modal" tabindex="-1">

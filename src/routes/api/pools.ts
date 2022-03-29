@@ -34,7 +34,7 @@ export async function patch (req, res) {
     try {
         //get active category
 
-        let result = await sqlHelper.get('category',['id'],`where active=1`) as unknown as any[];
+        let result = await sqlHelper.get('category',['id'],`where active=1 and competition_id=${req.session.competition}`) as unknown as any[];
         if(result.length > 0 ){
             let data = await sqlHelper.get('pool',[],`where category_id=${result[0].id} AND active_time IS NULL`);
             res.json(data);
