@@ -6,7 +6,7 @@
     const katas = await res2.json();
     const pools = await res.json();
     const competition = await res3.json();
-    console.log('the competition should be working now',competition);
+    console.log('the competition should be working now',pools);
     return { pools, katas, competition };
   }
 </script>
@@ -76,7 +76,21 @@ let pause = false;
       screen: "pool",
       pool: nextActivePool,
     };
-
+try {
+  nextActivePool = {};
+ pools.forEach((p,i)=>{
+  if(p.id == activePool.id){
+    pools[i].active_time = new Date();
+  }
+  else{
+    if(pools[i].active_time == null){
+      nextActivePool = pools[i];
+    }
+  }
+ })
+} catch (error) {
+  
+}
     socket.emit("show pool", display);
     let poolath = await axios.get(`api/pool_athlete?id=${activePool.id}`);
     console.log(poolath.data);
@@ -121,6 +135,11 @@ let pause = false;
           icon: "success",
           text: "Athlete has began performing",
           title: "success",
+        }).then(()=>{
+          judgesResult = [];
+          result = 0.0;
+          totalAth = 0.0;
+          totalTech = 0.0;
         });
       }
   } catch (error) {
@@ -241,7 +260,7 @@ const nextAthleteBtn =()=>{
       if (data) {
         win.Swal.fire({
           icon: "success",
-          text: "Athlete has began performing",
+          text: "Athlete has stopped performing",
           title: "success",
         }).then(() => {
           socket.emit("start judge", {
@@ -258,6 +277,18 @@ const nextAthleteBtn =()=>{
       });
     }
   };
+  const stopPool = ()=>{
+    if(nextActivePool.id){
+      activePool = {};
+    }
+    else{
+      win.Swal.fire({
+          icon: "info",
+          text: "You have finished all the pools in this category",
+          title: "End",
+        })
+    }
+  }
 </script>
 
 <Sidebar {active} />
@@ -332,7 +363,7 @@ const nextAthleteBtn =()=>{
         </div>
       </div>
       <div class="col-12 col-sm-3">
-        <div class="button btn bg-primary ">End Pool</div>
+        <div on:click="{stopPool}" class="button btn bg-primary ">End Pool</div>
       </div>
     </div>
 
