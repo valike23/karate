@@ -235,18 +235,11 @@ const nextAthleteBtn =()=>{
         `api/pool_athlete?pool=${activePool.id}&status=end&athlete=${activeAthlete.id}`
       );
       if (data) {
-        win.Swal.fire({
-
-          icon: "success",
-          text: "Athlete has stopped performing",
-          title: "success",
-        }).then(() => {
-          displayPlayer = true;
+        displayPlayer = true;
           socket.emit("start judge", {
             athlete: activeAthlete,
             pool: activePool,
           });
-        });
       }
     } catch (error) {
       win.Swal.fire({

@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
 import type { Iathlete } from "../model/application";
   let socket,win;
-  let pool = {};
+  let pool: any = {};
   let athletes = [];
   let athlete: Iathlete = {};
   athlete.result = 0;
@@ -112,6 +112,7 @@ import type { Iathlete } from "../model/application";
   <div class="text-center justify-content-center row">
     <div class="col-8">
       <br />
+      <!-- svelte-ignore a11y-missing-content -->
       <h1 class="text-uppercase" style="color: red; font-weight: 800;" />
     </div>
   </div>
@@ -149,7 +150,7 @@ import type { Iathlete } from "../model/application";
   <div class="p-4 row">
     <div class="col-4">
       <div class="pl-4" style="border-left: 1px solid red;">
-        <h1 style="color: white;" >{athlete.first_name + ' ' + athlete.last_name}</h1>
+        <h1 style="color: white; font-size:x-large" >{athlete.first_name + ' ' + athlete.last_name}</h1>
       </div>
     </div>
     <div class="col-4">
@@ -174,6 +175,7 @@ import type { Iathlete } from "../model/application";
     <div class="text-center justify-content-center row">
       <div class="col-8">
         <br />
+        <!-- svelte-ignore a11y-missing-content -->
         <h1 class="text-uppercase" style="color: red; font-weight: 800;" />
       </div>
     </div>
@@ -204,6 +206,7 @@ import type { Iathlete } from "../model/application";
     <br />
     <div class="text-center justify-content-center row">
       <div class="text-center col-8">
+        <!-- svelte-ignore a11y-missing-content -->
         <h1 class="text-uppercase" style="color: red; font-size: 40px;" />
       </div>
     </div>
@@ -211,6 +214,7 @@ import type { Iathlete } from "../model/application";
     <div class="p-4 row">
       <div class="col-4">
         <div class="pl-4" style="border-left: 1px solid red;">
+          <!-- svelte-ignore a11y-missing-content -->
           <h1 style="color: white;" />
         </div>
       </div>
@@ -224,6 +228,7 @@ import type { Iathlete } from "../model/application";
       </div>
       <div class="col-4">
         <div class="pr-4 text-right" style="border-right: 1px solid red;">
+          <!-- svelte-ignore a11y-missing-content -->
           <h1 style="color: white;" />
         </div>
       </div>

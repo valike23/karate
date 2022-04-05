@@ -227,8 +227,10 @@ activeGroup = group;
     {#if generatePools}
       <div class="row mb-5">
         {#each groups as group}
+        
           <div class="col-12 col-md-6 col-xl-4">
             <div class="card pl-2 pr-2">
+              <h5>{group.pool_name}</h5>
               <div class="mt-2 ml-2 mr-2"><p>{group.pool_name} {#if group.active_time == null && group.id}
                 <span on:click="{()=>{deletePool(group)}}" class="float-end material-icons">clear</span>
               {/if}</p></div>
@@ -336,6 +338,7 @@ activeGroup = group;
         {#each groups as g}
           <div class="col-12 col-sm-6 col-md-4">
             <div class="card">
+              <h5>{g.pool_name}</h5>
               <div class="table-responsive">
                 <table class="table align-items-center mb-0">
                   <thead>
