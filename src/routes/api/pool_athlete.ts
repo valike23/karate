@@ -36,6 +36,7 @@ export async function get (req, res) {
             athlete.last_name = element.last_name;
             athlete.middle_name = element.middle_name;
             athlete.result = element.result;
+            athlete.kata = element.kata;
 
             pool_athlete.athletes.push(athlete);
         });

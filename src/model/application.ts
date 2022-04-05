@@ -22,7 +22,8 @@ export interface Iathlete {
     category_id?: number;
     state_id?: number;
     club?: Iclub;
-    category?: Icategory
+    category?: Icategory,
+    kata?: string;
 }
 export interface IexcelAthlete {
     sn?: number;
@@ -48,6 +49,7 @@ export interface IpoolAthlete{
     result?: number;
     active_time?: Date;
     end_time?: Date;
+    kata?: string;
 }
 
 export interface Ikata{

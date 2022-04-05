@@ -1,33 +1,29 @@
 <script context="module">
   export async function preload(page) {
     const res = await this.fetch(`api/pools`, { method: "PATCH" });
-    const res2 = await this.fetch(`api/kata`);
     const res3 = await this.fetch(`api/competition?id=2`);
-    const katas = await res2.json();
     const pools = await res.json();
     const competition = await res3.json();
     console.log('the competition should be working now',pools);
-    return { pools, katas, competition };
+    return { pools, competition };
   }
 </script>
 
 <script lang="ts">
   import axios from "axios";
-
-  var _ = require("lodash");
   import { onMount } from "svelte";
 let pause = false;
+let displayPlayer = false;
   import Nav from "../components/Nav.svelte";
   import Sidebar from "../components/Sidebar.svelte";
   import type {
     Iathlete,
     Icompetition,
     IjudgePool,
-    Ikata,
     Ipool,
   } from "../model/application";
   let active = "control";
-  export let pools: Ipool[], katas: Ikata[],competition: Icompetition;
+  export let pools: Ipool[],competition: Icompetition;
   let poolAthletes: Iathlete[] = [];
   let kata = "";
   let win, modal;
@@ -46,11 +42,6 @@ let pause = false;
   let activeAthlete: Iathlete = {};
   let nextAthlete: Iathlete = {};
   const assignKata = async () => {
-    try {
-      let data = await axios.put(
-        `api/pool_athlete?pool=${activePool.id}&kata=${kata}&athlete=${activeAthlete.id}`
-      );
-      if (data.data) {
         socket.emit("display athlete", { kata, activeAthlete });
         let res = await win.Swal.fire({
           icon: "success",
@@ -60,15 +51,12 @@ let pause = false;
         if (res) {
           closeModal = true;
           isActve = true;
+          startKata();
+          setTimeout(stopKata, 3000);
         }
-      }
-    } catch (error) {
-      win.Swal.fire({
-        icon: "error",
-        title: "failed",
-        text: "failed to set kata",
-      });
-    }
+      
+    
+   
   };
   const start = async () => {
     activePool = nextActivePool;
@@ -136,6 +124,7 @@ try {
           text: "Athlete has began performing",
           title: "success",
         }).then(()=>{
+          location.reload();
           judgesResult = [];
           result = 0.0;
           totalAth = 0.0;
@@ -218,13 +207,6 @@ const nextAthleteBtn =()=>{
     console.log(temp2, judgesResult, totalTech);
   };
 
-  const openKataModal = () => {
-    modal = new win.bootstrap.Modal(document.getElementById("kata"), {
-      keyboard: false,
-      backdrop: "static",
-    }).show();
-    closeModal = true;
-  };
   const startKata = async () => {
     try {
       
@@ -232,17 +214,12 @@ const nextAthleteBtn =()=>{
         `api/pool_athlete?pool=${activePool.id}&status=start&athlete=${activeAthlete.id}`
       );
       if (data) {
-        win.Swal.fire({
-          icon: "success",
-          text: "Athlete has began performing",
-          title: "success",
-        }).then(()=>{
-          pause = true;
+        pause = true;
          let index = poolAthletes.findIndex((e)=>{
             return e.id == activeAthlete.id
           });
           poolAthletes[index].active_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        });
+       
       }
     } catch (error) {
       win.Swal.fire({
@@ -259,10 +236,12 @@ const nextAthleteBtn =()=>{
       );
       if (data) {
         win.Swal.fire({
+
           icon: "success",
           text: "Athlete has stopped performing",
           title: "success",
         }).then(() => {
+          displayPlayer = true;
           socket.emit("start judge", {
             athlete: activeAthlete,
             pool: activePool,
@@ -358,8 +337,8 @@ const nextAthleteBtn =()=>{
         <div on:click="{nextAthleteBtn}" class="button btn bg-secondary ">Next Athlete</div>
       </div>
       <div class="col-12 col-sm-3">
-        <div class="button btn bg-secondary " on:click={openKataModal}>
-          Start Active Athlete
+        <div class="button btn bg-secondary " on:click={assignKata}>
+          Start Athlete
         </div>
       </div>
       <div class="col-12 col-sm-3">
@@ -368,16 +347,7 @@ const nextAthleteBtn =()=>{
     </div>
 
     {#if closeModal}
-      <div class="row card mt-5">
-        <div class="col-2"><img src="" alt="" /></div>
-        <div class="col-4">
-          {activeAthlete.first_name + " " + activeAthlete.last_name}
-        </div>
-        <div class="col-4">
-          <button on:click={startKata} class="btn btn-success">start</button>
-          <button on:click={stopKata} class="btn btn-primary">Stop</button>
-        </div>
-      </div>
+    <p>showing result for: ${activeAthlete.first_name + ' ' + activeAthlete.last_name}</p>
     {/if}
    
       <div class="ml-2 row mt-5">
@@ -465,49 +435,7 @@ const nextAthleteBtn =()=>{
    
   </div>
 </main>
-<div id="kata" class="modal" tabindex="-1">
-  <div class="modal-dialog">
-    <form on:submit|preventDefault={assignKata} class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Pick a Kata</h5>
-      </div>
-      <div class="modal-body">
-        <div class="col-12 col-sm-6">
-          <div class="form-group">
-            <label for="name">Kata </label>
-            <select bind:value={kata} required class="form-control">
-              <option value="">Pick a kata the athlete will perform</option>
-              {#each katas as item}
-                <option value={item.kata_name}>{item.kata_name}</option>
-              {/each}
-            </select>
-          </div>
-        </div>
-        <div class="col-12 col-sm-6">
-          <div class="form-group">
-            <label for="name">Athlete </label>
-            <input
-              value={activeAthlete.first_name + " " + activeAthlete.last_name}
-              required
-              class="form-control"
-              type="text"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        {#if closeModal}
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal">Close</button
-          >
-        {/if}
-        <input type="submit" class="btn btn-primary" />
-      </div>
-    </form>
-  </div>
-</div>
+
 
 <style>
   .button {

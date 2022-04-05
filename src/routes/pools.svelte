@@ -9,9 +9,12 @@
     );
     const categoryId = query.id;
     const res = await this.fetch(`api/pools?id=${query.id}`);
+    const res4 = await this.fetch(`api/kata`);
     const athletes = await res2.json();
     const pools = await res.json();
-    return { athletes, pools, categoryId };
+    const kata = await res4.json();
+    console.log(pools);
+    return { athletes, pools, categoryId, kata };
   }
 </script>
 
@@ -21,11 +24,14 @@
 
   import Nav from "../components/Nav.svelte";
   import Sidebar from "../components/Sidebar.svelte";
-  import type { Iathlete, Ipool, IpoolAthlete } from "../model/application";
+  import type { Iathlete, Ikata, Ipool, IpoolAthlete } from "../model/application";
 
-  export let athletes: Iathlete[], pools: Ipool[], categoryId;
+  export let athletes: Iathlete[], pools: Ipool[], categoryId, kata: Ikata[];
   let generatePools = false;
   let win: any = {};
+  let myModal;
+  let activeAthlete: Iathlete ={};
+  let activeGroup: Ipool ={};
   let active = "category";
   let group: Ipool = {};
   console.log(pools);
@@ -33,6 +39,18 @@
   const deletePool =(pool)=>{
     console.log(pool);
     
+  }
+
+  const assignKata =(kata: string)=>{
+    groups.forEach((g,i)=>{
+      if(activeGroup.id == g.id){
+        groups[i].athletes.forEach((a,j)=>{
+          if(a.id == activeAthlete.id) groups[i].athletes[j].kata = kata;
+        })
+      }
+    })
+    myModal.hide();
+    groups = groups;
   }
   if (pools.length == 0) {
     //if there is no pool for this category set the page to generatePool page
@@ -44,8 +62,16 @@
     //if there are items then generate group from the pools
   
   }
-
+const  openModal =(group, athlete)=>{
+   myModal = new win.bootstrap.Modal(document.getElementById('exampleModal'), {
+  keyboard: false
+});
+myModal.show();
+activeAthlete = athlete;
+activeGroup = group;
+}
   onMount(()=>{
+    win = window;
     console.log(pools);
     console.log(groups);
     pools.forEach( (pool,i) => {
@@ -136,6 +162,7 @@
           e.athletes.forEach((f) => {
             let poolAthlete: IpoolAthlete = {};
             poolAthlete.pool_id = e.id;
+            poolAthlete.kata = f.kata;
             poolAthlete.athlete_id = f.id;
             poolAthletes.push(poolAthlete);
           });
@@ -210,16 +237,18 @@
                   <tr>
                     <th scope="col">#</th>
                     <th colspan="2" scope="col">name</th>
-                    <th />
+                    <th>Kata</th>
+                    <th>action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {#each group.athletes as athlete, i}
                     <tr>
-                      <th scope="col">{i + 1}</th>
+                      <td scope="col">{i + 1}</td>
                       <td colspan="2"
                         >{athlete.first_name + " " + athlete.last_name}</td
                       >
+                      <td>{athlete.kata}</td>
                       <td
                         ><span
                           on:click={() => {
@@ -227,7 +256,7 @@
                           }}
                           style="color: red"
                           class="material-icons">delete</span
-                        ></td
+                        > <img on:click="{()=>{openModal(group, athlete)}}" class="icon" src="karate.svg" alt=""></td
                       >
                     </tr>
                   {/each}
@@ -319,6 +348,10 @@
                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
                         >name</th
                       >
+                      <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                      >Kata</th
+                    >
 
                       <th
                         class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
@@ -339,6 +372,11 @@
                             >{a.first_name +
                               " " +
                               a.last_name}</p
+                          >
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                          <p 
+                            >{a.kata}</p
                           >
                         </td>
                         <td class="align-middle text-center text-sm">
@@ -421,10 +459,41 @@
     </form>
   </div>
 </div>
-
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Choose Kata</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       <div class="row">
+         <div class="col">
+          <ul class="list-group">
+            {#each kata as k}
+            <li on:click="{()=>{assignKata(k.kata_name)}}" class:active={k.kata_name == activeAthlete.kata} class="list-group-item">{k.kata_name}</li>
+            {/each}
+          </ul>
+         </div>
+       </div>
+      </div>
+     
+    </div>
+  </div>
+</div>
 <style>
   .form-control {
     border: 1px solid gainsboro;
     padding-left: 5px;
+  }
+  .icon {
+    width: 20px;
+    height: 20px;
+    color: blue;
+    margin-top: -6px;
+    margin-left: 10px;
+  }
+  .active {
+    border: 1px solid green;
   }
 </style>
