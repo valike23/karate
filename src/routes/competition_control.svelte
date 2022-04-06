@@ -121,8 +121,9 @@ try {
         if (data) {
         win.Swal.fire({
           icon: "success",
-          text: "Athlete has began performing",
+          text: "Result uploaded to score board successfully",
           title: "success",
+          timer: 3000
         }).then(()=>{
           location.reload();
           judgesResult = [];
@@ -293,7 +294,7 @@ const nextAthleteBtn =()=>{
           <input
             class="form-control"
             type="text"
-            value={activeAthlete.first_name + " " + activeAthlete.last_name}
+            value={activeAthlete.first_name || 'no active athlete' + " " + activeAthlete.last_name || ''}
             disabled
           />
         </div>
@@ -304,7 +305,7 @@ const nextAthleteBtn =()=>{
           <input
             class="form-control"
             type="text"
-            value={nextAthlete.first_name + " " + nextAthlete.last_name}
+            value={nextAthlete.first_name || 'no active athlete' + " " + nextAthlete.last_name || ''}
             disabled
           />
         </div>
