@@ -115,7 +115,7 @@
 
             j.judgeResult.forEach((judge,i)=>{
                
-                athlete['judge' +judge.judge_id] = {
+                athlete['judge' + (i + 1)] = {
                     id: judge.judge_id,
                     athletic_performance: judge.athletic_performance,
                     ap_color: judge.ap_color || '',
