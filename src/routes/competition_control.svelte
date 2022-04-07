@@ -51,8 +51,9 @@ let displayPlayer = false;
         if (res) {
           closeModal = true;
           isActve = true;
-          startKata();
           setTimeout(stopKata, 3000);
+          startKata();
+         
         }
       
     
@@ -125,7 +126,7 @@ try {
           title: "success",
           timer: 3000
         }).then(()=>{
-          location.reload();
+          //location.reload();
           judgesResult = [];
           result = 0.0;
           totalAth = 0.0;
@@ -250,17 +251,35 @@ const nextAthleteBtn =()=>{
       });
     }
   };
-  const stopPool = ()=>{
-    if(nextActivePool.id){
-      activePool = {};
+  const stopPool = async ()=>{
+    try {
+      let data = await axios.put(`api/pool2?id=${activePool.id}`);
+      if(data){
+        if(nextActivePool.id){
+          win.Swal.fire({
+          icon: "success",
+          text: "Current pool is completed",
+          title: "complete",
+        }).then(()=>{
+          activePool = {};
+          location.reload();
+        })
+     
     }
     else{
       win.Swal.fire({
           icon: "info",
-          text: "You have finished all the pools in this category",
+          text: "You have finished all the pools in this category, you will be navigated to the category page",
           title: "End",
+        }).then(()=>{
+          location.href = '/category';
         })
     }
+      }
+    } catch (error) {
+      
+    }
+    
   }
 </script>
 
@@ -294,7 +313,7 @@ const nextAthleteBtn =()=>{
           <input
             class="form-control"
             type="text"
-            value={activeAthlete.first_name || 'no active athlete' + " " + activeAthlete.last_name || ''}
+            value={`${activeAthlete.first_name || ''} ${activeAthlete.last_name || ''} `}
             disabled
           />
         </div>
@@ -305,7 +324,7 @@ const nextAthleteBtn =()=>{
           <input
             class="form-control"
             type="text"
-            value={nextAthlete.first_name || 'no active athlete' + " " + nextAthlete.last_name || ''}
+            value={`${nextAthlete.first_name || ''} ${nextAthlete.last_name || ''} `}
             disabled
           />
         </div>
