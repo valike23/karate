@@ -32,6 +32,21 @@ let displayPlayer = false;
   let totalAth = 0;
   $: result = totalAth * 0.3 + totalTech * 0.7;
   let socket;
+  const assignPool =(pool)=>{
+    activePool = pool;
+    pools.forEach((p,i)=>{
+  if(p.id == activePool.id){
+    pools[i].active_time = new Date();
+    assignKata();
+  }
+  else{
+    if(pools[i].active_time == null){
+      nextActivePool = pools[i];
+    }
+  }
+ })
+
+  }
   let nextActivePool =
     pools.find((p) => {
       return p.active_time;
@@ -70,6 +85,7 @@ try {
  pools.forEach((p,i)=>{
   if(p.id == activePool.id){
     pools[i].active_time = new Date();
+    assignKata();
   }
   else{
     if(pools[i].active_time == null){
@@ -145,6 +161,7 @@ const nextAthleteBtn =()=>{
       const element = poolAthletes[index];
       if(element.active_time){
         nextAthlete = element;
+        assignKata();
         break;
       }
     }
@@ -295,6 +312,10 @@ const nextAthleteBtn =()=>{
        <p><strong>current competition: </strong>:{competition.competition_name} </p> 
       </div>
     </div>
+    <div class="row mb-3">
+      <small style="color: red;">*** this button is to choose a pool at anytime to become the active pool</small><br>
+      <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#activeModal">select active pool</button>
+    </div>
     <div class="row mb-5">
       <div class="col-6 col-sm-3">
         <div class="form-group">
@@ -343,18 +364,18 @@ const nextAthleteBtn =()=>{
     </div>
 
     <div class="row mt-5">
-      <div class="col-12 col-sm-3">
+      <div class="col-12 col-sm-4">
         <div on:click={start} class="button btn bg-primary">start pool</div>
       </div>
-      <div class="col-12 col-sm-3">
+      <div class="col-12 col-sm-4">
         <div on:click="{nextAthleteBtn}" class="button btn bg-secondary ">Next Athlete</div>
       </div>
-      <div class="col-12 col-sm-3">
+      <!-- <div class="col-12 col-sm-3">
         <div class="button btn bg-secondary " on:click={assignKata}>
           Start Athlete
         </div>
-      </div>
-      <div class="col-12 col-sm-3">
+      </div> -->
+      <div class="col-12 col-sm-4">
         <div on:click="{stopPool}" class="button btn bg-primary ">End Pool</div>
       </div>
     </div>
@@ -449,7 +470,28 @@ const nextAthleteBtn =()=>{
   </div>
 </main>
 
-
+<div class="modal fade" id="activeModal" tabindex="-1" aria-labelledby="activeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="activeModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>double click on any pool name to activate it</p>
+        <ul class="list-group">
+          {#each pools as pool}
+          <li on:click="{()=>{assignPool(pool)}}" class:active={pool.id == activePool.id} class="list-group-item">{pool.pool_name}</li>
+          {/each}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 <style>
   .button {
     width: 80%;
